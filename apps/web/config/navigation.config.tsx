@@ -1,4 +1,4 @@
-import { Home, User } from 'lucide-react';
+import { CheckCircle, Clock, FilePlus, Home, User, Users } from 'lucide-react';
 import { z } from 'zod';
 
 import { NavigationConfigSchema } from '@kit/ui/navigation-schema';
@@ -26,6 +26,41 @@ const routes = [
         label: 'common:routes.profile',
         path: pathsConfig.app.profileSettings,
         Icon: <User className={iconClasses} />,
+      },
+    ],
+  },
+  {
+    label: 'common:routes.posts',
+    children: [
+      {
+        label: 'common:routes.newPost',
+        path: pathsConfig.app.newPost,
+        Icon: <FilePlus className={iconClasses} />,
+      },
+      {
+        label: 'common:routes.drafts',
+        path: pathsConfig.app.drafts,
+        Icon: <Clock className={iconClasses} />,
+      },
+      {
+        label: 'common:routes.scheduled',
+        path: pathsConfig.app.scheduled,
+        Icon: <Clock className={iconClasses} />,
+      },
+      {
+        label: 'common:routes.posted',
+        path: pathsConfig.app.posted,
+        Icon: <CheckCircle className={iconClasses} />,
+      },
+    ],
+  },
+  {
+    label: 'common:routes.accounts',
+    children: [
+      {
+        label: 'common:routes.selectedAccounts',
+        path: pathsConfig.app.accounts,
+        Icon: <Users className={iconClasses} />,
       },
     ],
   },

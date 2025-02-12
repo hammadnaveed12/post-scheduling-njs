@@ -54,6 +54,7 @@
   "newVersionAvailable": "New version available",
   "newVersionAvailableDescription": "A new version of the app is available. It is recommended to refresh the page to get the latest updates and avoid any issues.",
   "newVersionSubmitButton": "Reload and Update",
+  
   "back": "Back",
   "routes": {
     "home": "Home",
@@ -63,7 +64,16 @@
     "dashboard": "Dashboard",
     "settings": "Settings",
     "profile": "Profile",
-    "application": "Application"
+    "application": "Application",
+    "posts" : "Posts",
+    "newPost" : "New Post",
+    "drafts" : "Drafts",
+    "scheduled" : "scheduled",
+    "posted": "Posted",
+    "selectedAccounts" : "Selected Accounts",
+    "accounts" : "Accounts"
+
+
   },
   "roles": {
     "owner": {

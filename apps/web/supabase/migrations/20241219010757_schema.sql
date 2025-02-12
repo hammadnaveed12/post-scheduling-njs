@@ -310,3 +310,63 @@ create policy account_image on storage.objects for all using (
         kit.get_storage_filename_as_uuid(name) = auth.uid()
         )
     );
+
+
+    -- Create Posts Table
+CREATE TABLE IF NOT EXISTS public.posts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES public.accounts(id) ON DELETE CASCADE,
+    status TEXT CHECK (status IN ('draft', 'scheduled', 'published')) DEFAULT 'draft',
+    type TEXT CHECK (type IN ('text', 'media')) NOT NULL,
+    content TEXT,
+    media_url TEXT,
+    cover_image_url TEXT,
+    scheduled_time TIMESTAMP,
+    created_at TIMESTAMP DEFAULT now()
+);
+
+-- Create Selected Accounts Table
+CREATE TABLE IF NOT EXISTS public.selected_accounts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    post_id UUID REFERENCES public.posts(id) ON DELETE CASCADE,
+    account_id UUID REFERENCES public.accounts(id) ON DELETE CASCADE,
+    status TEXT CHECK (status IN ('pending', 'failed', 'success')) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT now()
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.selected_accounts ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for Posts
+CREATE POLICY select_posts ON public.posts
+    FOR SELECT
+    TO authenticated
+    USING (user_id = auth.uid());
+
+CREATE POLICY insert_posts ON public.posts
+    FOR INSERT
+    WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY update_posts ON public.posts
+    FOR UPDATE
+    USING (user_id = auth.uid())
+    WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY delete_posts ON public.posts
+    FOR DELETE
+    USING (user_id = auth.uid());
+
+-- RLS Policies for Selected Accounts
+CREATE POLICY select_selected_accounts ON public.selected_accounts
+    FOR SELECT
+    TO authenticated
+    USING (EXISTS (SELECT 1 FROM public.posts WHERE public.posts.id = post_id AND public.posts.user_id = auth.uid()));
+
+CREATE POLICY insert_selected_accounts ON public.selected_accounts
+    FOR INSERT
+    WITH CHECK (EXISTS (SELECT 1 FROM public.posts WHERE public.posts.id = post_id AND public.posts.user_id = auth.uid()));
+
+CREATE POLICY delete_selected_accounts ON public.selected_accounts
+    FOR DELETE
+    USING (EXISTS (SELECT 1 FROM public.posts WHERE public.posts.id = post_id AND public.posts.user_id = auth.uid()));
