@@ -9,7 +9,8 @@ export async function createPost(
   content: string | null,
   mediaUrl?: string,
   coverImageUrl?: string,
-  scheduledTime?: string,
+  scheduledTime?: string | null,
+  status: 'draft' | 'scheduled' | 'published' = 'draft',
 ) {
   const { data, error } = await supabase
     .from('posts')
@@ -21,6 +22,7 @@ export async function createPost(
         media_url: mediaUrl,
         cover_image_url: coverImageUrl,
         scheduled_time: scheduledTime,
+        status,
       },
     ])
     .select();
@@ -52,6 +54,17 @@ export async function updatePostStatus(
     .update({ status })
     .eq('id', postId)
     .select();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateCoverImage(postId: string, coverImageUrl: string) {
+  const { data, error } = await supabase
+    .from('posts')
+    .update({ cover_image_url: coverImageUrl })
+    .eq('id', postId)
+    .select();
+
   if (error) throw error;
   return data;
 }
