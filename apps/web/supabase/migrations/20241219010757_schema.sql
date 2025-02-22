@@ -370,3 +370,99 @@ CREATE POLICY insert_selected_accounts ON public.selected_accounts
 CREATE POLICY delete_selected_accounts ON public.selected_accounts
     FOR DELETE
     USING (EXISTS (SELECT 1 FROM public.posts WHERE public.posts.id = post_id AND public.posts.user_id = auth.uid()));
+
+
+create table "public"."social_accounts" (
+    "id" uuid not null default gen_random_uuid(),
+    "created_at" timestamp with time zone not null default now(),
+    "user_id" uuid not null,
+    "platform" text not null,
+    "access_token" text not null,
+    "refresh_token" text,
+    "expires_at" timestamp without time zone,
+    "name" text,
+    "username" text,
+    "password" text,
+    "active" boolean default true,
+    "avatar" text
+);
+
+
+alter table "public"."social_accounts" enable row level security;
+
+CREATE UNIQUE INDEX social_accounts_pkey ON public.social_accounts USING btree (id);
+
+alter table "public"."social_accounts" add constraint "social_accounts_pkey" PRIMARY KEY using index "social_accounts_pkey";
+
+alter table "public"."social_accounts" add constraint "social_accounts_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON DELETE CASCADE not valid;
+
+alter table "public"."social_accounts" validate constraint "social_accounts_user_id_fkey";
+
+grant delete on table "public"."social_accounts" to "anon";
+
+grant insert on table "public"."social_accounts" to "anon";
+
+grant references on table "public"."social_accounts" to "anon";
+
+grant select on table "public"."social_accounts" to "anon";
+
+grant trigger on table "public"."social_accounts" to "anon";
+
+grant truncate on table "public"."social_accounts" to "anon";
+
+grant update on table "public"."social_accounts" to "anon";
+
+grant delete on table "public"."social_accounts" to "authenticated";
+
+grant insert on table "public"."social_accounts" to "authenticated";
+
+grant references on table "public"."social_accounts" to "authenticated";
+
+grant select on table "public"."social_accounts" to "authenticated";
+
+grant trigger on table "public"."social_accounts" to "authenticated";
+
+grant truncate on table "public"."social_accounts" to "authenticated";
+
+grant update on table "public"."social_accounts" to "authenticated";
+
+grant delete on table "public"."social_accounts" to "service_role";
+
+grant insert on table "public"."social_accounts" to "service_role";
+
+grant references on table "public"."social_accounts" to "service_role";
+
+grant select on table "public"."social_accounts" to "service_role";
+
+grant trigger on table "public"."social_accounts" to "service_role";
+
+grant truncate on table "public"."social_accounts" to "service_role";
+
+grant update on table "public"."social_accounts" to "service_role";
+
+create policy "Enable insert for users based on user_id"
+on "public"."social_accounts"
+as permissive
+for insert
+to public
+with check ((( SELECT auth.uid() AS uid) = user_id));
+
+
+create policy "Enable users to view their own data only"
+on "public"."social_accounts"
+as permissive
+for select
+to authenticated
+using ((( SELECT auth.uid() AS uid) = user_id));
+
+
+
+alter table "public"."posts" add column "format" text;
+
+alter table "public"."selected_accounts" add column "social_accounts" uuid;
+
+alter table "public"."selected_accounts" add constraint "selected_accounts_social_accounts_fkey" FOREIGN KEY (social_accounts) REFERENCES social_accounts(id) not valid;
+
+alter table "public"."selected_accounts" validate constraint "selected_accounts_social_accounts_fkey";
+
+

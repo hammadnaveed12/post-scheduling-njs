@@ -7,24 +7,88 @@ export async function createPost(
   userId: string,
   type: 'text' | 'media',
   content: string | null,
-  mediaUrl?: string,
+  mediaUrl?: File | null,
   coverImageUrl?: string,
   scheduledTime?: string | null,
   status: 'draft' | 'scheduled' | 'published' = 'draft',
 ) {
+  let value: any = {
+    user_id: userId,
+    content,
+    type,
+    media_url: '',
+    cover_image_url: '',
+    scheduled_time: scheduledTime,
+    status,
+  };
+
+  if (type == 'media') {
+    const { data: res, error: err } = await supabase.storage
+      .from('post_media')
+      .upload(`${mediaUrl!.name}`, mediaUrl!, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    const {
+      data: { publicUrl },
+    } = await supabase.storage
+      .from('post_media')
+      .getPublicUrl(`${mediaUrl!.name}`);
+
+    value.format = mediaUrl?.type.startsWith('image/') ? 'image' : 'video';
+    value.cover_image_url = publicUrl;
+    value.media_url = publicUrl;
+  }
+
+  const { data, error } = await supabase.from('posts').insert([value]).select();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updatePost(
+  userId: string,
+  type: 'text' | 'media',
+  content: string | null,
+  post: any,
+  mediaUrl?: File | null,
+  coverImageUrl?: string,
+  scheduledTime?: string | null,
+  status: 'draft' | 'scheduled' | 'published' = 'draft',
+) {
+  let value: any = {
+    user_id: userId,
+    content,
+    media_url: coverImageUrl,
+    cover_image_url: coverImageUrl,
+    scheduled_time: scheduledTime,
+    status,
+  };
+
+  if (mediaUrl?.name) {
+    const { data: res, error: err } = await supabase.storage
+      .from('post_media')
+      .upload(`${mediaUrl!.name}`, mediaUrl!, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    const {
+      data: { publicUrl: image },
+    } = await supabase.storage
+      .from('post_media')
+      .getPublicUrl(`${mediaUrl!.name}`);
+
+    value.cover_image_url = image;
+    value.media_url = image;
+    value.format = mediaUrl?.type.startsWith('image/') ? 'image' : 'video';
+  }
+
   const { data, error } = await supabase
     .from('posts')
-    .insert([
-      {
-        user_id: userId,
-        type,
-        content,
-        media_url: mediaUrl,
-        cover_image_url: coverImageUrl,
-        scheduled_time: scheduledTime,
-        status,
-      },
-    ])
+    .update(value)
+    .eq('id', post.id)
     .select();
 
   if (error) throw error;
