@@ -1,7 +1,4 @@
-<<<<<<< Updated upstream
-=======
 import axios from 'axios';
->>>>>>> Stashed changes
 import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
 import { google } from 'googleapis';
 
@@ -101,8 +98,6 @@ export default class YoutubeIntegration extends ScoialMedia {
 
     return { data, error };
   }
-<<<<<<< Updated upstream
-=======
 
   async PostContent({
     access_token,
@@ -170,5 +165,4 @@ export default class YoutubeIntegration extends ScoialMedia {
     }
     return [];
   }
->>>>>>> Stashed changes
 }

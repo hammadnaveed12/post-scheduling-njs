@@ -87,8 +87,6 @@ export default class FacebookIntegration extends ScoialMedia {
 
     return { data, error };
   }
-<<<<<<< Updated upstream
-=======
 
   // async post({ access_token, post_type, post_format, post_content, post_media_url }:any) {
   //   if (post_type == 'text') {
@@ -125,5 +123,4 @@ export default class FacebookIntegration extends ScoialMedia {
   //     finalId = videoId;
   //   }
   // }
->>>>>>> Stashed changes
 }

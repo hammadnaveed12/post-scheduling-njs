@@ -1,10 +1,7 @@
 import ScoialMedia from './SocialIntegration';
 
-<<<<<<< Updated upstream
-=======
 const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
->>>>>>> Stashed changes
 export default class ThreadsIntegration extends ScoialMedia {
   redirect_uri;
   client_key;
@@ -87,8 +84,6 @@ export default class ThreadsIntegration extends ScoialMedia {
 
     return { data, error };
   }
-<<<<<<< Updated upstream
-=======
 
   async fetchPageInformation(accessToken: string) {
     const { id, username, threads_profile_picture_url, access_token, error } =
@@ -258,5 +253,4 @@ export default class ThreadsIntegration extends ScoialMedia {
       }
     }
   }
->>>>>>> Stashed changes
 }

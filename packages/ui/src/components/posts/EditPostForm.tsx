@@ -25,22 +25,15 @@ export default function EditPostForm({ post }: any) {
   const [content, setContent] = useState(post.content);
   const [media, setMedia] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(post.media_url);
-<<<<<<< Updated upstream
-  const [scheduledTime, setScheduledTime] = useState('');
-=======
   const [scheduledTime, setScheduledTime] = useState(post.schedule_time);
->>>>>>> Stashed changes
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const supabase = getSupabaseBrowserClient();
-<<<<<<< Updated upstream
-=======
   const [selectedPlatforms, setSelectedPlatforms] = useState<any>([]);
 
->>>>>>> Stashed changes
   const fileInputRef = useRef<any>(null);
 
   useEffect(() => {
@@ -59,8 +52,6 @@ export default function EditPostForm({ post }: any) {
     fetchUserAccounts();
   }, [supabase]);
 
-<<<<<<< Updated upstream
-=======
   function groupAccountsByPlatform(data: any) {
     const groupedData: any = [];
 
@@ -78,7 +69,6 @@ export default function EditPostForm({ post }: any) {
     }
   }, [post]);
 
->>>>>>> Stashed changes
   const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
       const file = event.target.files[0];
@@ -107,15 +97,6 @@ export default function EditPostForm({ post }: any) {
         media,
         coverImage || '',
         scheduledTime && scheduledTime !== 'draft' ? scheduledTime : null,
-<<<<<<< Updated upstream
-        'draft',
-      );
-      if (updatedPost && updatedPost.length > 0 && coverImage) {
-        await updateCoverImage(updatedPost[0]?.id!, coverImage);
-      }
-
-      router.push('/home');
-=======
         post.status,
       );
 
@@ -163,45 +144,16 @@ export default function EditPostForm({ post }: any) {
       // }
 
       // router.push('/home');
->>>>>>> Stashed changes
     } catch (error) {
       console.error('Error saving draft:', error);
     } finally {
       setLoading(false);
     }
   };
-<<<<<<< Updated upstream
-  return (
-    <Card>
-      <CardContent>
-        {/* Post Type Selection */}
-        {/* <div className="flex items-center justify-start gap-10 py-5">
-          <label>
-            <input
-              type="radio"
-              value="text"
-              checked={postType === 'text'}
-              onChange={() => setPostType('text')}
-            />
-            Text Post
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="media"
-              checked={postType === 'media'}
-              onChange={() => setPostType('media')}
-            />
-            Media Post
-          </label>
-        </div> */}
-
-=======
 
   return (
     <Card>
       <CardContent>
->>>>>>> Stashed changes
         {/* Media Upload Section */}
         {postType === 'media' && (
           <div className="media-preview-container flex items-start justify-start gap-5">
@@ -283,16 +235,11 @@ export default function EditPostForm({ post }: any) {
 
         {/* Social Media Icons Placeholder */}
         <div className="mt-5 flex items-center justify-start gap-5">
-<<<<<<< Updated upstream
-          <p>Add icons here</p>
-          {/* <SelectPlatform type={post.type} /> */}
-=======
           <SelectPlatform
             type={post.type}
             selectedPlatforms={selectedPlatforms}
             setSelectedPlatforms={setSelectedPlatforms}
           />
->>>>>>> Stashed changes
         </div>
 
         {/* Save Draft Button */}
@@ -303,3 +250,4 @@ export default function EditPostForm({ post }: any) {
     </Card>
   );
 }
+

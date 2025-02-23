@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import TikTokIntegration from '~/lib/socials/TikTokIntegration';
 
 export async function GET(req: any) {
@@ -8,14 +7,3 @@ export async function GET(req: any) {
 
   return Response.redirect(authUrl);
 }
-=======
-import TikTokIntegration from '~/lib/socials/TikTokIntegration';
-
-export async function GET(req: any) {
-  const client = new TikTokIntegration();
-
-  const authUrl = await client.generateAuthUrl();
-
-  return Response.redirect(authUrl);
-}
->>>>>>> Stashed changes

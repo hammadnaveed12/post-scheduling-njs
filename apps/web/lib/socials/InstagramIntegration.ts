@@ -1,10 +1,7 @@
 import ScoialMedia from './SocialIntegration';
 
-<<<<<<< Updated upstream
-=======
 const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
->>>>>>> Stashed changes
 export default class InstagramIntegration extends ScoialMedia {
   apiBase;
   redirect_uri;
@@ -86,41 +83,6 @@ export default class InstagramIntegration extends ScoialMedia {
 
     return { data, error };
   }
-<<<<<<< Updated upstream
-=======
-
-  // async pages(accessToken: string) {
-  //   const { data, error } = await (
-  //     await fetch(
-  //       `https://graph.facebook.com/v20.0/me/accounts?fields=id,instagram_business_account,username,name,picture.type(large)&access_token=${accessToken}&limit=500`,
-  //     )
-  //   ).json();
-  //   console.log(error);
-
-  //   const onlyConnectedAccounts = await Promise.all(
-  //     data
-  //       .filter((f: any) => f.instagram_business_account)
-  //       .map(async (p: any) => {
-  //         return {
-  //           pageId: p.id,
-  //           ...(await (
-  //             await fetch(
-  //               `https://graph.facebook.com/v20.0/${p.instagram_business_account.id}?fields=name,profile_picture_url&access_token=${accessToken}&limit=500`,
-  //             )
-  //           ).json()),
-  //           id: p.instagram_business_account.id,
-  //         };
-  //       }),
-  //   );
-
-  //   return onlyConnectedAccounts.map((p: any) => ({
-  //     pageId: p.pageId,
-  //     id: p.id,
-  //     name: p.name,
-  //     picture: { data: { url: p.profile_picture_url } },
-  //   }));
-  // }
-
   async get_id(access_token: string) {
     const { user_id, name, username, profile_picture_url, error } = await (
       await fetch(
@@ -271,5 +233,4 @@ export default class InstagramIntegration extends ScoialMedia {
       }
     }
   }
->>>>>>> Stashed changes
 }

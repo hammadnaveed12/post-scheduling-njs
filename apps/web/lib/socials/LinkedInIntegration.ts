@@ -1,7 +1,3 @@
-<<<<<<< Updated upstream
-import ScoialMedia from './SocialIntegration';
-
-=======
 import axios from 'axios';
 import sharp from 'sharp';
 
@@ -19,7 +15,6 @@ export const readOrFetch = async (path: string) => {
   }
 };
 
->>>>>>> Stashed changes
 export default class LinkedInIntegration extends ScoialMedia {
   redirect_uri;
   client_key;
@@ -31,11 +26,7 @@ export default class LinkedInIntegration extends ScoialMedia {
     this.redirect_uri = `https://redirectmeto.com/http://localhost:3000/api/auth/callback/linkedin/`;
 
     this.client_key = process.env.LINKEDIN_CLIENT_ID;
-<<<<<<< Updated upstream
-    this.client_secret = process.env.FACEBOOK_CLIENT_SECRET;
-=======
     this.client_secret = process.env.LINKEDIN_CLIENT_SECRET;
->>>>>>> Stashed changes
     this.scope = ['openid', 'profile', 'w_member_social'];
   }
 
@@ -59,10 +50,7 @@ export default class LinkedInIntegration extends ScoialMedia {
       expires_in: expiresIn,
       refresh_token: refreshToken,
       scope,
-<<<<<<< Updated upstream
-=======
       error,
->>>>>>> Stashed changes
     } = await (
       await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
         method: 'POST',
@@ -113,8 +101,6 @@ export default class LinkedInIntegration extends ScoialMedia {
 
     return { data, error };
   }
-<<<<<<< Updated upstream
-=======
 
   async getId(access_token: any) {
     const {
@@ -313,5 +299,4 @@ export default class LinkedInIntegration extends ScoialMedia {
       };
     }
   }
->>>>>>> Stashed changes
 }
