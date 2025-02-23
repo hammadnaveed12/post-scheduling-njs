@@ -156,11 +156,11 @@ export default class LinkedInIntegration extends ScoialMedia {
   }
 
   private async updateSelectedAccountStatus(id: any) {
-    const supabase = getSupabaseServerAdminClient();
-    await supabase
-      .from('selected_accounts')
-      .update({ status: 'posted' })
-      .eq('id', id);
+    // const supabase = getSupabaseServerAdminClient();
+    // await supabase
+    //   .from('selected_accounts')
+    //   .update({ status: 'posted' })
+    //   .eq('id', id);
   }
 
   protected async uploadPicture(

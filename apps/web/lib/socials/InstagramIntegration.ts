@@ -124,13 +124,7 @@ export default class InstagramIntegration extends ScoialMedia {
     await timer(2200);
     return this.checkLoaded(mediaContainerId, accessToken);
   }
-  private async updateSelectedAccountStatus(id: any) {
-    const supabase = getSupabaseServerAdminClient();
-    await supabase
-      .from('selected_accounts')
-      .update({ status: 'posted' })
-      .eq('id', id);
-  }
+  private async updateSelectedAccountStatus(id: any) {}
 
   async PostContent({
     access_token,
