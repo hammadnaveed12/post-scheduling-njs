@@ -1,3 +1,5 @@
+import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+
 import ScoialMedia from './SocialIntegration';
 
 const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -122,6 +124,13 @@ export default class InstagramIntegration extends ScoialMedia {
     await timer(2200);
     return this.checkLoaded(mediaContainerId, accessToken);
   }
+  private async updateSelectedAccountStatus(id: any) {
+    const supabase = getSupabaseServerAdminClient();
+    await supabase
+      .from('selected_accounts')
+      .update({ status: 'posted' })
+      .eq('id', id);
+  }
 
   async PostContent({
     access_token,
@@ -129,6 +138,7 @@ export default class InstagramIntegration extends ScoialMedia {
     post_format,
     post_content,
     post_media_url,
+    id: selected_acc_id,
   }: any): Promise<any> {
     const id = await this.get_id(access_token);
 
@@ -137,99 +147,111 @@ export default class InstagramIntegration extends ScoialMedia {
 
     if (post_type == 'media') {
       if (post_format == 'video') {
-        const media_type = 'REELS';
-        const searchParams = new URLSearchParams({
-          media_type,
-          text: post_content,
-          video_url: post_media_url,
-          access_token: access_token,
-        });
+        try {
+          const media_type = 'REELS';
+          const searchParams = new URLSearchParams({
+            media_type,
+            text: post_content,
+            video_url: post_media_url,
+            access_token: access_token,
+          });
 
-        console.log('REEEL TYPE');
+          console.log('REEEL TYPE');
 
-        const { id: media_container_id, error: err } = await (
-          await fetch(
-            `https://graph.instagram.com/v20.0/${id}/media?${searchParams.toString()}`,
-            {
-              method: 'POST',
-            },
-          )
-        ).json();
-        console.log('REEEL TYPE ,errrr', err);
-        console.log('container_id', media_container_id);
-
-        await this.checkLoaded(media_container_id, access_token);
-
-        console.log('container_id', media_container_id);
-
-        const { id: media_id, error } = await (
-          await fetch(
-            `https://graph.instagram.com/v20.0/${id}/media_publish?creation_id=${media_container_id}&access_token=${access_token}`,
-            { method: 'POST' },
-          )
-        ).json();
-
-        console.log('media_id', media_id);
-        console.log('media_id', error);
-
-        const { permalink, ...all } = await (
-          await fetch(
-            `https://graph.instagram.com/v20.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
-          )
-        ).json();
-
-        console.log(permalink);
-
-        return permalink;
-      } else if (post_format == 'image') {
-        const { id: mediaContainerId, error } = await (
-          await fetch(
-            `https://graph.instagram.com/v20.0/${id}/media?image_url=${encodeURIComponent(post_media_url)}&caption=${encodeURIComponent(post_content)}&access_token=${access_token}`,
-            {
-              method: 'POST',
-            },
-          )
-        ).json();
-
-        console.log('Media container created:', mediaContainerId);
-        console.log('Media container created:', error);
-        let status = 'IN_PROGRESS';
-        while (status === 'IN_PROGRESS') {
-          const { status_code } = await (
+          const { id: media_container_id, error: err } = await (
             await fetch(
-              `https://graph.instagram.com/v20.0/${mediaContainerId}?fields=status_code&access_token=${access_token}`,
+              `https://graph.instagram.com/v20.0/${id}/media?${searchParams.toString()}`,
+              {
+                method: 'POST',
+              },
             )
           ).json();
-          await timer(3000);
-          status = status_code;
+          console.log('REEEL TYPE ,errrr', err);
+          console.log('container_id', media_container_id);
+
+          await this.checkLoaded(media_container_id, access_token);
+
+          console.log('container_id', media_container_id);
+
+          const { id: media_id, error } = await (
+            await fetch(
+              `https://graph.instagram.com/v20.0/${id}/media_publish?creation_id=${media_container_id}&access_token=${access_token}`,
+              { method: 'POST' },
+            )
+          ).json();
+
+          console.log('media_id', media_id);
+          console.log('media_id', error);
+
+          const { permalink, ...all } = await (
+            await fetch(
+              `https://graph.instagram.com/v20.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
+            )
+          ).json();
+
+          console.log(permalink);
+          if (permalink) {
+            this.updateSelectedAccountStatus(selected_acc_id);
+          }
+          return permalink;
+        } catch (err) {
+          console.error(err);
         }
-        console.log('Media processing complete.');
+      } else if (post_format == 'image') {
+        try {
+          const { id: mediaContainerId, error } = await (
+            await fetch(
+              `https://graph.instagram.com/v20.0/${id}/media?image_url=${encodeURIComponent(post_media_url)}&caption=${encodeURIComponent(post_content)}&access_token=${access_token}`,
+              {
+                method: 'POST',
+              },
+            )
+          ).json();
 
-        const { id: mediaId } = await (
-          await fetch(
-            `https://graph.instagram.com/v20.0/${id}/media_publish?creation_id=${mediaContainerId}&access_token=${access_token}&field=id`,
-            {
-              method: 'POST',
-            },
-          )
-        ).json();
+          console.log('Media container created:', mediaContainerId);
+          console.log('Media container created:', error);
+          let status = 'IN_PROGRESS';
+          while (status === 'IN_PROGRESS') {
+            const { status_code } = await (
+              await fetch(
+                `https://graph.instagram.com/v20.0/${mediaContainerId}?fields=status_code&access_token=${access_token}`,
+              )
+            ).json();
+            await timer(3000);
+            status = status_code;
+          }
+          console.log('Media processing complete.');
 
-        console.log('Post published:', mediaId);
+          const { id: mediaId } = await (
+            await fetch(
+              `https://graph.instagram.com/v20.0/${id}/media_publish?creation_id=${mediaContainerId}&access_token=${access_token}&field=id`,
+              {
+                method: 'POST',
+              },
+            )
+          ).json();
 
-        // Get post URL
-        const { permalink } = await (
-          await fetch(
-            `https://graph.instagram.com/v20.0/graph.facebook.com?fields=permalink&access_token=${access_token}`,
-          )
-        ).json();
+          console.log('Post published:', mediaId);
 
-        console.log('Post URL:', permalink);
+          // Get post URL
+          const { permalink } = await (
+            await fetch(
+              `https://graph.instagram.com/v20.0/graph.facebook.com?fields=permalink&access_token=${access_token}`,
+            )
+          ).json();
 
-        return {
-          postId: mediaId,
-          releaseURL: permalink,
-          status: 'success',
-        };
+          console.log('Post URL:', permalink);
+          if (permalink) {
+            this.updateSelectedAccountStatus(selected_acc_id);
+          }
+          return {
+            postId: mediaId,
+            releaseURL: permalink,
+            status: 'success',
+          };
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
   }

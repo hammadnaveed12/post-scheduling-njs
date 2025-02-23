@@ -1,3 +1,5 @@
+import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+
 import ScoialMedia from './SocialIntegration';
 
 const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -128,59 +130,30 @@ export default class ThreadsIntegration extends ScoialMedia {
     return this.checkLoaded(mediaContainerId, accessToken);
   }
 
+  private async updateSelectedAccountStatus(id: any) {
+    const supabase = getSupabaseServerAdminClient();
+    await supabase
+      .from('selected_accounts')
+      .update({ status: 'posted' })
+      .eq('id', id);
+  }
+
   async PostContent({
     access_token,
     post_type,
     post_format,
     post_content,
     post_media_url,
+    id: selected_acc_id,
   }: any): Promise<any> {
     const { id, ...data } = await this.fetchPageInformation(access_token);
 
     if (post_type == 'text') {
-      const media_type = 'TEXT';
-      const searchParams = new URLSearchParams({
-        media_type,
-        text: post_content,
-        access_token: access_token,
-      });
-
-      const { id: media_container_id } = await (
-        await fetch(
-          `https://graph.threads.net/v1.0/${id}/threads?${searchParams.toString()}`,
-          {
-            method: 'POST',
-          },
-        )
-      ).json();
-
-      await this.checkLoaded(media_container_id, access_token);
-
-      console.log(media_container_id);
-
-      const { id: media_id, error } = await (
-        await fetch(
-          `https://graph.threads.net/v1.0/${id}/threads_publish?creation_id=${media_container_id}&access_token=${access_token}`,
-          { method: 'POST' },
-        )
-      ).json();
-
-      const { permalink, ...all } = await (
-        await fetch(
-          `https://graph.threads.net/v1.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
-        )
-      ).json();
-
-      console.log(permalink);
-
-      return permalink;
-    } else if (post_type == 'media') {
-      if (post_format == 'video') {
-        const media_type = 'VIDEO';
+      try {
+        const media_type = 'TEXT';
         const searchParams = new URLSearchParams({
           media_type,
           text: post_content,
-          video_url: post_media_url,
           access_token: access_token,
         });
 
@@ -211,45 +184,101 @@ export default class ThreadsIntegration extends ScoialMedia {
         ).json();
 
         console.log(permalink);
-
+        if (permalink) {
+          this.updateSelectedAccountStatus(selected_acc_id);
+        }
         return permalink;
+      } catch (err) {
+        console.error(err);
+      }
+    } else if (post_type == 'media') {
+      if (post_format == 'video') {
+        try {
+          const media_type = 'VIDEO';
+          const searchParams = new URLSearchParams({
+            media_type,
+            text: post_content,
+            video_url: post_media_url,
+            access_token: access_token,
+          });
+
+          const { id: media_container_id } = await (
+            await fetch(
+              `https://graph.threads.net/v1.0/${id}/threads?${searchParams.toString()}`,
+              {
+                method: 'POST',
+              },
+            )
+          ).json();
+
+          await this.checkLoaded(media_container_id, access_token);
+
+          console.log(media_container_id);
+
+          const { id: media_id, error } = await (
+            await fetch(
+              `https://graph.threads.net/v1.0/${id}/threads_publish?creation_id=${media_container_id}&access_token=${access_token}`,
+              { method: 'POST' },
+            )
+          ).json();
+
+          const { permalink, ...all } = await (
+            await fetch(
+              `https://graph.threads.net/v1.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
+            )
+          ).json();
+
+          console.log(permalink);
+          if (permalink) {
+            this.updateSelectedAccountStatus(selected_acc_id);
+          }
+          return permalink;
+        } catch (err) {
+          console.error(err);
+        }
       } else if (post_format == 'image') {
-        const media_type = 'IMAGE';
+        try {
+          const media_type = 'IMAGE';
 
-        const searchParams = new URLSearchParams({
-          media_type,
-          text: post_content,
-          image_url: post_media_url,
-          access_token: access_token,
-        });
+          const searchParams = new URLSearchParams({
+            media_type,
+            text: post_content,
+            image_url: post_media_url,
+            access_token: access_token,
+          });
 
-        const { id: media_container_id } = await (
-          await fetch(
-            `https://graph.threads.net/v1.0/${id}/threads?${searchParams.toString()}`,
-            {
-              method: 'POST',
-            },
-          )
-        ).json();
+          const { id: media_container_id } = await (
+            await fetch(
+              `https://graph.threads.net/v1.0/${id}/threads?${searchParams.toString()}`,
+              {
+                method: 'POST',
+              },
+            )
+          ).json();
 
-        await this.checkLoaded(media_container_id, access_token);
+          await this.checkLoaded(media_container_id, access_token);
 
-        console.log(media_container_id);
+          console.log(media_container_id);
 
-        const { id: media_id, error } = await (
-          await fetch(
-            `https://graph.threads.net/v1.0/${id}/threads_publish?creation_id=${media_container_id}&access_token=${access_token}`,
-            { method: 'POST' },
-          )
-        ).json();
+          const { id: media_id, error } = await (
+            await fetch(
+              `https://graph.threads.net/v1.0/${id}/threads_publish?creation_id=${media_container_id}&access_token=${access_token}`,
+              { method: 'POST' },
+            )
+          ).json();
 
-        const { permalink, ...all } = await (
-          await fetch(
-            `https://graph.threads.net/v1.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
-          )
-        ).json();
-
-        return permalink;
+          const { permalink, ...all } = await (
+            await fetch(
+              `https://graph.threads.net/v1.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
+            )
+          ).json();
+          if (permalink) {
+            this.updateSelectedAccountStatus(selected_acc_id);
+          }
+          return permalink;
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
   }

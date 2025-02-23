@@ -2,6 +2,8 @@ import AtpAgent, { RichText } from '@atproto/api';
 import axios from 'axios';
 import sharp from 'sharp';
 
+import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+
 import ScoialMedia from './SocialIntegration';
 
 class BlueskyIntegration extends ScoialMedia {
@@ -29,13 +31,38 @@ class BlueskyIntegration extends ScoialMedia {
       throw new Error('Bluesky login failed.');
     }
   }
+  private async updateSelectedAccountStatus(id: any) {
+    const supabase = getSupabaseServerAdminClient();
+    await supabase
+      .from('selected_accounts')
+      .update({ status: 'posted' })
+      .eq('id', id);
+  }
+  async SaveToSupabase({
+    supabase,
+    platform,
+    res,
+    user_id,
+  }: any): Promise<any> {
+    let result = await supabase.from('social_accounts').insert({
+      user_id: user_id,
+      platform: platform.id,
+      access_token: res?.accessJwt,
+      refresh_token: res?.refreshJwt,
+      name: res?.handle,
+      username: this.username,
+      password: this.password,
+    });
 
+    return result;
+  }
   async PostContent({
     access_token,
     post_type,
     post_format,
     post_content,
     post_media_url,
+    id: selected_acc_id,
   }: any) {
     let id = '';
     try {
@@ -78,7 +105,9 @@ class BlueskyIntegration extends ScoialMedia {
             }
           : {}), // Attach media only if present
       });
-
+      if (uri) {
+        this.updateSelectedAccountStatus(selected_acc_id);
+      }
       return {
         id,
         postId: uri,
@@ -89,25 +118,6 @@ class BlueskyIntegration extends ScoialMedia {
       console.error('Error posting to Bluesky:', error);
       throw new Error('Failed to post to Bluesky.');
     }
-  }
-
-  async SaveToSupabase({
-    supabase,
-    platform,
-    res,
-    user_id,
-  }: any): Promise<any> {
-    let result = await supabase.from('social_accounts').insert({
-      user_id: user_id,
-      platform: platform.id,
-      access_token: res?.accessJwt,
-      refresh_token: res?.refreshJwt,
-      name: res?.handle,
-      username: this.username,
-      password: this.password,
-    });
-
-    return result;
   }
 }
 

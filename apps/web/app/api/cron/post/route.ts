@@ -26,15 +26,16 @@ export async function POST(req: NextRequest) {
 
   const getPosts = await supabase
     .from('posts')
-    .select('*, selected_accounts(social_accounts(*))')
+    .select('*, selected_accounts(id, status, social_accounts(*))')
     .eq('status', 'scheduled')
+    .eq('selected_accounts.status', 'pending')
     .gte('scheduled_time', startOfDay.toISOString())
     .lte('scheduled_time', endOfDay.toISOString());
 
   // console.log(getPosts.data);
 
   await getPosts.data?.map(async (item, index) => {
-    item.selected_accounts.map(async ({ social_accounts }) => {
+    item.selected_accounts.map(async ({ id, social_accounts }) => {
       if (social_accounts?.platform == 'threads') {
         const threads_client = new ThreadsIntegration();
 
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
+          id,
         });
 
         console.log(permalink);
@@ -56,6 +58,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
+          id,
         });
 
         console.log(permalink);
@@ -71,21 +74,22 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
+          id,
         });
 
         console.log(permalink);
       } else if (social_accounts?.platform == 'tiktok') {
         const tiktok_client = new TikTokIntegration();
 
-        // const permalink = await tiktok_client.PostContent({
-        //   access_token: social_accounts.access_token,
-        //   post_type: item.type,
-        //   post_format: item.format,
-        //   post_content: item.content,
-        //   post_media_url: item.media_url,
-        // });
+        const permalink = await tiktok_client.PostContent({
+          access_token: social_accounts.access_token,
+          post_type: item.type,
+          post_format: item.format,
+          post_content: item.content,
+          post_media_url: item.media_url,
+        });
 
-        // console.log(permalink);
+        console.log(permalink);
       } else if (social_accounts?.platform == 'instagram') {
         const it_client = new InstagramIntegration();
 
@@ -95,6 +99,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
+          id,
         });
 
         console.log(permalink);

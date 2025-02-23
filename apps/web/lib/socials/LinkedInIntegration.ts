@@ -1,6 +1,8 @@
 import axios from 'axios';
 import sharp from 'sharp';
 
+import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
+
 import ScoialMedia from './SocialIntegration';
 
 export const readOrFetch = async (path: string) => {
@@ -153,6 +155,14 @@ export default class LinkedInIntegration extends ScoialMedia {
     return connectAll.join('');
   }
 
+  private async updateSelectedAccountStatus(id: any) {
+    const supabase = getSupabaseServerAdminClient();
+    await supabase
+      .from('selected_accounts')
+      .update({ status: 'posted' })
+      .eq('id', id);
+  }
+
   protected async uploadPicture(
     fileName: string,
     accessToken: string,
@@ -220,83 +230,106 @@ export default class LinkedInIntegration extends ScoialMedia {
     post_format,
     post_content,
     post_media_url,
+    id: selected_acc_id,
   }: any) {
     const id = await this.getId(access_token);
     console.log('id', id);
 
     if (post_type == 'text') {
-      const data = await fetch('https://api.linkedin.com/v2/posts', {
-        method: 'POST',
-        headers: {
-          'X-Restli-Protocol-Version': '2.0.0',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
-        },
-        body: JSON.stringify({
-          author: `urn:li:person:${id}`,
-          commentary: this.fixText(post_content),
-          visibility: 'PUBLIC',
-          lifecycleState: 'PUBLISHED',
-          distribution: {
-            feedDistribution: 'MAIN_FEED',
-            targetEntities: [],
-            thirdPartyDistributionChannels: [],
+      try {
+        const data = await fetch('https://api.linkedin.com/v2/posts', {
+          method: 'POST',
+          headers: {
+            'X-Restli-Protocol-Version': '2.0.0',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${access_token}`,
           },
-        }),
-      });
+          body: JSON.stringify({
+            author: `urn:li:person:${id}`,
+            commentary: this.fixText(post_content),
+            visibility: 'PUBLIC',
+            lifecycleState: 'PUBLISHED',
+            distribution: {
+              feedDistribution: 'MAIN_FEED',
+              targetEntities: [],
+              thirdPartyDistributionChannels: [],
+            },
+          }),
+        });
+        if (data.status !== 201 && data.status !== 200) {
+          throw new Error('Error posting to LinkedIn');
+        }
+        const postId = data.headers.get('x-restli-id')!;
+        console.log(postId);
+        if (postId) {
+          this.updateSelectedAccountStatus(selected_acc_id);
+        }
 
-      return 'I think success';
-    } else if (post_type == 'media') {
-      const uploadedMediaId = await this.uploadPicture(
-        post_media_url,
-        access_token,
-        id,
-        post_media_url.indexOf('mp4') > -1
-          ? Buffer.from(await readOrFetch(post_media_url))
-          : await sharp(await readOrFetch(post_media_url))
-              .toFormat('jpeg')
-              .resize({ width: 1000 })
-              .toBuffer(),
-        'personal',
-      );
-
-      console.log('UPLOADED PICTURE', uploadedMediaId);
-
-      const data = await fetch('https://api.linkedin.com/v2/posts', {
-        method: 'POST',
-        headers: {
-          'X-Restli-Protocol-Version': '2.0.0',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${access_token}`,
-        },
-        body: JSON.stringify({
-          author: `urn:li:person:${id}`,
-          commentary: this.fixText(post_content),
-          visibility: 'PUBLIC',
-          distribution: {
-            feedDistribution: 'MAIN_FEED',
-            targetEntities: [],
-            thirdPartyDistributionChannels: [],
-          },
-          content: {
-            media: { id: uploadedMediaId },
-          },
-          lifecycleState: 'PUBLISHED',
-          isReshareDisabledByAuthor: false,
-        }),
-      });
-      if (data.status !== 201 && data.status !== 200) {
-        throw new Error('Error posting to LinkedIn');
+        return {
+          status: 'posted',
+          postId,
+          releaseURL: `https://www.linkedin.com/feed/update/${postId}`,
+        };
+      } catch (err) {
+        console.error(err);
       }
+    } else if (post_type == 'media') {
+      try {
+        const uploadedMediaId = await this.uploadPicture(
+          post_media_url,
+          access_token,
+          id,
+          post_media_url.indexOf('mp4') > -1
+            ? Buffer.from(await readOrFetch(post_media_url))
+            : await sharp(await readOrFetch(post_media_url))
+                .toFormat('jpeg')
+                .resize({ width: 1000 })
+                .toBuffer(),
+          'personal',
+        );
 
-      const postId = data.headers.get('x-restli-id')!;
-      console.log(postId);
+        console.log('UPLOADED PICTURE', uploadedMediaId);
 
-      return {
-        status: 'posted',
-        postId,
-        releaseURL: `https://www.linkedin.com/feed/update/${postId}`,
-      };
+        const data = await fetch('https://api.linkedin.com/v2/posts', {
+          method: 'POST',
+          headers: {
+            'X-Restli-Protocol-Version': '2.0.0',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${access_token}`,
+          },
+          body: JSON.stringify({
+            author: `urn:li:person:${id}`,
+            commentary: this.fixText(post_content),
+            visibility: 'PUBLIC',
+            distribution: {
+              feedDistribution: 'MAIN_FEED',
+              targetEntities: [],
+              thirdPartyDistributionChannels: [],
+            },
+            content: {
+              media: { id: uploadedMediaId },
+            },
+            lifecycleState: 'PUBLISHED',
+            isReshareDisabledByAuthor: false,
+          }),
+        });
+        if (data.status !== 201 && data.status !== 200) {
+          throw new Error('Error posting to LinkedIn');
+        }
+
+        const postId = data.headers.get('x-restli-id')!;
+        console.log(postId);
+        if (postId) {
+          this.updateSelectedAccountStatus(selected_acc_id);
+        }
+        return {
+          status: 'posted',
+          postId,
+          releaseURL: `https://www.linkedin.com/feed/update/${postId}`,
+        };
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 }
