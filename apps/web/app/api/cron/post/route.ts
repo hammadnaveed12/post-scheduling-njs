@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
     .lte('scheduled_time', endOfDay.toISOString());
 
   // console.log(getPosts.data);
+  console.log(getPosts);
 
   await getPosts.data?.map(async (item, index) => {
     item.selected_accounts.map(async ({ id, social_accounts }) => {
@@ -105,7 +106,7 @@ export async function POST(req: NextRequest) {
         console.log(permalink);
       } else if (social_accounts?.platform == 'youtube') {
         const yt_client = new YoutubeIntegration();
-
+        console.log('youtube', social_accounts);
         const permalink = await yt_client.PostContent({
           access_token: social_accounts.access_token,
           post_type: item.type,

@@ -42,8 +42,12 @@ export default class YoutubeIntegration extends ScoialMedia {
       'https://www.googleapis.com/auth/userinfo.profile',
       'https://www.googleapis.com/auth/userinfo.email',
       'https://www.googleapis.com/auth/youtube',
+      'https://www.googleapis.com/auth/youtube.force-ssl',
       'https://www.googleapis.com/auth/youtube.readonly',
       'https://www.googleapis.com/auth/youtube.upload',
+      'https://www.googleapis.com/auth/youtubepartner',
+      'https://www.googleapis.com/auth/youtubepartner',
+      'https://www.googleapis.com/auth/yt-analytics.readonly',
     ];
   }
 
@@ -110,6 +114,10 @@ export default class YoutubeIntegration extends ScoialMedia {
     client.setCredentials({ access_token: access_token });
     const youtubeClient = youtube(client);
 
+    console.log(youtubeClient.channels);
+    console.log(youtubeClient.videos.list);
+
+    console.log('Youtuuuube');
     const response = await axios({
       url: post_media_url,
       method: 'GET',
@@ -145,6 +153,9 @@ export default class YoutubeIntegration extends ScoialMedia {
         },
       ];
     } catch (err: any) {
+      console.log('errrror', err);
+      console.log('errrror', err.errors);
+
       if (
         err.response?.data?.error?.errors?.[0]?.reason === 'failedPrecondition'
       ) {
@@ -161,7 +172,6 @@ export default class YoutubeIntegration extends ScoialMedia {
       ) {
         throw 'You have to link your youtube account to your google account first.';
       }
-      console.log(err);
     }
     return [];
   }
