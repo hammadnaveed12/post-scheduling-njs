@@ -19,8 +19,12 @@ export async function POST(req: NextRequest) {
   const supabase = getSupabaseServerAdminClient();
 
   const date = new Date();
+
   const startOfDay = new Date(date.setUTCHours(0, 0, 0, 0));
   const endOfDay = new Date(date.setUTCHours(23, 59, 59, 999));
+
+  // const startOfDay = new Date(date.setUTCMinutes(date.getUTCMinutes() - 5));
+  // const endOfDay = new Date(date.setUTCMinutes(date.getUTCMinutes() + 5));
   console.log(startOfDay.toISOString());
   console.log(endOfDay.toISOString());
 
@@ -113,6 +117,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
+          id,
         });
 
         console.log(permalink);

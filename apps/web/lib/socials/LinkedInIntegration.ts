@@ -156,11 +156,7 @@ export default class LinkedInIntegration extends ScoialMedia {
   }
 
   private async updateSelectedAccountStatus(id: any) {
-    // const supabase = getSupabaseServerAdminClient();
-    // await supabase
-    //   .from('selected_accounts')
-    //   .update({ status: 'posted' })
-    //   .eq('id', id);
+    await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
   }
 
   protected async uploadPicture(
@@ -320,7 +316,7 @@ export default class LinkedInIntegration extends ScoialMedia {
         const postId = data.headers.get('x-restli-id')!;
         console.log(postId);
         if (postId) {
-          this.updateSelectedAccountStatus(selected_acc_id);
+          await this.updateSelectedAccountStatus(selected_acc_id);
         }
         return {
           status: 'posted',

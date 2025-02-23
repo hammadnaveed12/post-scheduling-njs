@@ -131,11 +131,7 @@ export default class ThreadsIntegration extends ScoialMedia {
   }
 
   private async updateSelectedAccountStatus(id: any) {
-    // const supabase = getSupabaseServerAdminClient();
-    // await supabase
-    //   .from('selected_accounts')
-    //   .update({ status: 'posted' })
-    //   .eq('id', id);
+    await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
   }
 
   async PostContent({
@@ -230,7 +226,7 @@ export default class ThreadsIntegration extends ScoialMedia {
 
           console.log(permalink);
           if (permalink) {
-            this.updateSelectedAccountStatus(selected_acc_id);
+            await this.updateSelectedAccountStatus(selected_acc_id);
           }
           return permalink;
         } catch (err) {
@@ -273,7 +269,7 @@ export default class ThreadsIntegration extends ScoialMedia {
             )
           ).json();
           if (permalink) {
-            this.updateSelectedAccountStatus(selected_acc_id);
+            await this.updateSelectedAccountStatus(selected_acc_id);
           }
           return permalink;
         } catch (err) {

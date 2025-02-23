@@ -124,7 +124,9 @@ export default class InstagramIntegration extends ScoialMedia {
     await timer(2200);
     return this.checkLoaded(mediaContainerId, accessToken);
   }
-  private async updateSelectedAccountStatus(id: any) {}
+  private async updateSelectedAccountStatus(id: any) {
+    await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
+  }
 
   async PostContent({
     access_token,
@@ -236,7 +238,7 @@ export default class InstagramIntegration extends ScoialMedia {
 
           console.log('Post URL:', permalink);
           if (permalink) {
-            this.updateSelectedAccountStatus(selected_acc_id);
+            await this.updateSelectedAccountStatus(selected_acc_id);
           }
           return {
             postId: mediaId,

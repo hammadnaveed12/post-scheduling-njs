@@ -32,11 +32,7 @@ class BlueskyIntegration extends ScoialMedia {
     }
   }
   private async updateSelectedAccountStatus(id: any) {
-    // const supabase = getSupabaseServerAdminClient();
-    // await supabase
-    //   .from('selected_accounts')
-    //   .update({ status: 'posted' })
-    //   .eq('id', id);
+    await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
   }
   async SaveToSupabase({
     supabase,
@@ -106,7 +102,7 @@ class BlueskyIntegration extends ScoialMedia {
           : {}), // Attach media only if present
       });
       if (uri) {
-        this.updateSelectedAccountStatus(selected_acc_id);
+        await this.updateSelectedAccountStatus(selected_acc_id);
       }
       return {
         id,

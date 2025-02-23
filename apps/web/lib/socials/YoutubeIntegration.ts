@@ -103,12 +103,17 @@ export default class YoutubeIntegration extends ScoialMedia {
     return { data, error };
   }
 
+  private async updateSelectedAccountStatus(id: any) {
+    await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
+  }
+
   async PostContent({
     access_token,
     post_type,
     post_format,
     post_content,
     post_media_url,
+    selected_acc_id,
   }: any) {
     const { client, youtube } = clientAndYoutube();
     client.setCredentials({ access_token: access_token });
@@ -143,6 +148,10 @@ export default class YoutubeIntegration extends ScoialMedia {
       });
 
       console.log(all.statusText);
+
+      if (all?.data?.id!) {
+        await this.updateSelectedAccountStatus(selected_acc_id);
+      }
 
       return [
         {
