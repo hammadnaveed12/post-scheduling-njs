@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+import axios from 'axios';
+>>>>>>> Stashed changes
 import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
 import { google } from 'googleapis';
 
@@ -97,4 +101,74 @@ export default class YoutubeIntegration extends ScoialMedia {
 
     return { data, error };
   }
+<<<<<<< Updated upstream
+=======
+
+  async PostContent({
+    access_token,
+    post_type,
+    post_format,
+    post_content,
+    post_media_url,
+  }: any) {
+    const { client, youtube } = clientAndYoutube();
+    client.setCredentials({ access_token: access_token });
+    const youtubeClient = youtube(client);
+
+    const response = await axios({
+      url: post_media_url,
+      method: 'GET',
+      responseType: 'stream',
+    });
+
+    try {
+      const all = await youtubeClient.videos.insert({
+        part: ['id', 'snippet', 'status'],
+        notifySubscribers: false,
+        requestBody: {
+          snippet: {
+            title: post_content,
+            description: post_content,
+          },
+          status: {
+            privacyStatus: 'public',
+          },
+        },
+        media: {
+          body: response.data,
+        },
+      });
+
+      console.log(all.statusText);
+
+      return [
+        {
+          id: '',
+          releaseURL: `https://www.youtube.com/watch?v=${all?.data?.id}`,
+          postId: all?.data?.id!,
+          status: 'success',
+        },
+      ];
+    } catch (err: any) {
+      if (
+        err.response?.data?.error?.errors?.[0]?.reason === 'failedPrecondition'
+      ) {
+        throw 'We have uploaded your video but we could not set the thumbnail. Thumbnail size is too large';
+      }
+      if (
+        err.response?.data?.error?.errors?.[0]?.reason === 'uploadLimitExceeded'
+      ) {
+        throw 'You have reached your daily upload limit, please try again tomorrow.';
+      }
+      if (
+        err.response?.data?.error?.errors?.[0]?.reason ===
+        'youtubeSignupRequired'
+      ) {
+        throw 'You have to link your youtube account to your google account first.';
+      }
+      console.log(err);
+    }
+    return [];
+  }
+>>>>>>> Stashed changes
 }

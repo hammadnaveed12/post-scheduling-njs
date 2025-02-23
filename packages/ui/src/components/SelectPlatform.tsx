@@ -2,14 +2,29 @@
 
 import React, { useEffect, useState } from 'react';
 
+<<<<<<< Updated upstream
 import Image from 'next/image';
 
+=======
+>>>>>>> Stashed changes
 import facebookIcon from '../../../../apps/web/public/icons/facebook-icon.svg';
 import instaIcon from '../../../../apps/web/public/icons/instagram-icon.svg';
 import twitterIcon from '../../../../apps/web/public/icons/twitter-icon.svg';
 import youtubeIcon from '../../../../apps/web/public/icons/youtube-icon.svg';
 import { getSupabaseBrowserClient } from '../../../supabase/src/clients/browser-client';
 import { requireUser } from '../../../supabase/src/require-user';
+<<<<<<< Updated upstream
+=======
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '../shadcn/select';
+>>>>>>> Stashed changes
 
 const platformIcons = [
   { id: 'twitter', name: 'Twitter', icon: twitterIcon },
@@ -22,10 +37,25 @@ const platformIcons = [
   { id: 'tiktok', name: 'tiktok', icon: youtubeIcon },
 ];
 
+<<<<<<< Updated upstream
 function SelectPlatform({ type = 'text' }: { type: 'text' | 'media' }) {
   const [platforms, setPlatforms] = useState([]);
   const [availablePlatforms, setAvailablePlatforms] = useState([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
+=======
+function SelectPlatform({
+  type = 'text',
+  selectedPlatforms,
+  setSelectedPlatforms,
+}: {
+  type: 'text' | 'media';
+  selectedPlatforms: any;
+  setSelectedPlatforms: any;
+}) {
+  const [platforms, setPlatforms] = useState([]);
+  const [availablePlatforms, setAvailablePlatforms] = useState([]);
+  console.log(selectedPlatforms);
+>>>>>>> Stashed changes
 
   const handleCheckboxChange = (platform: any) => {
     setSelectedPlatforms(
@@ -34,13 +64,25 @@ function SelectPlatform({ type = 'text' }: { type: 'text' | 'media' }) {
           ? prev.filter((item: any) => item !== platform) // Remove if already selected
           : [...prev, platform], // Add if not selected
     );
+<<<<<<< Updated upstream
+=======
+
+
+
+    
+    
+>>>>>>> Stashed changes
   };
 
   function filterPlatformsByType(platforms: any, type: 'text' | 'media') {
     const platformTypes: any = {
       facebook: ['text', 'media'],
       instagram: ['media'],
+<<<<<<< Updated upstream
       threads: ['text'],
+=======
+      threads: ['text','media'],
+>>>>>>> Stashed changes
       bluesky: ['text'],
       twitter: ['text', 'media'], // X (Twitter) supports both
       youtube: ['media'],
@@ -50,15 +92,39 @@ function SelectPlatform({ type = 'text' }: { type: 'text' | 'media' }) {
 
     if (type === 'text') {
       return platforms.filter((platform: any) =>
+<<<<<<< Updated upstream
         platformTypes[platform]?.includes('text'),
       );
     } else if (type === 'media') {
       return platforms.filter((platform: any) =>
         platformTypes[platform]?.includes('media'),
+=======
+        platformTypes[platform.platform]?.includes('text'),
+      );
+    } else if (type === 'media') {
+      return platforms.filter((platform: any) =>
+        platformTypes[platform.platform]?.includes('media'),
+>>>>>>> Stashed changes
       );
     }
   }
 
+<<<<<<< Updated upstream
+=======
+  function groupAccountsByPlatform(data: any) {
+    const groupedData: any = {};
+
+    data.forEach(({ platform, ...item }: any) => {
+      if (!groupedData[platform]) {
+        groupedData[platform] = { platform, accounts: [] };
+      }
+      groupedData[platform].accounts.push({ item });
+    });
+
+    return Object.values(groupedData);
+  }
+
+>>>>>>> Stashed changes
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
 
@@ -73,11 +139,19 @@ function SelectPlatform({ type = 'text' }: { type: 'text' | 'media' }) {
           .eq('user_id', user.id)
           .eq('active', true);
 
+<<<<<<< Updated upstream
         const platforms = social_accounts!.data.map((item) => item.platform);
         setPlatforms(platforms);
 
         console.log('Fetched published posts:', social_accounts);
         // setPlatforms(posts || []);
+=======
+        const platforms: any = groupAccountsByPlatform(social_accounts.data);
+
+        setPlatforms(platforms);
+
+        console.log('Fetched published posts:', platforms);
+>>>>>>> Stashed changes
       } catch (error) {
         console.error('Error fetching published posts:', error);
       }
@@ -88,12 +162,17 @@ function SelectPlatform({ type = 'text' }: { type: 'text' | 'media' }) {
   useEffect(() => {
     if (type) {
       let platform = filterPlatformsByType(platforms, type);
+<<<<<<< Updated upstream
+=======
+      console.log('aiyo', platform);
+>>>>>>> Stashed changes
       setAvailablePlatforms(platform);
     }
   }, [type, platforms]);
 
   return (
     <div className="mt-3 flex items-center justify-center gap-5">
+<<<<<<< Updated upstream
       {availablePlatforms.map((platform) => (
         <label key={platform} className="flex items-center space-x-2">
           <input
@@ -106,6 +185,22 @@ function SelectPlatform({ type = 'text' }: { type: 'text' | 'media' }) {
           <span>{platform}</span>
         </label>
       ))}
+=======
+      {availablePlatforms.map((platform: any) => (
+        <label key={platform.platform} className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            value={platform.platform}
+            checked={selectedPlatforms.includes(platform.platform)}
+            onChange={() => handleCheckboxChange(platform.platform)}
+            className="h-4 w-4"
+          />
+          <span>{platform.platform}</span>
+        </label>
+      ))}
+
+     
+>>>>>>> Stashed changes
     </div>
   );
 }

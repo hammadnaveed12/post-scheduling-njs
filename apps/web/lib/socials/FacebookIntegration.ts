@@ -87,4 +87,43 @@ export default class FacebookIntegration extends ScoialMedia {
 
     return { data, error };
   }
+<<<<<<< Updated upstream
+=======
+
+  // async post({ access_token, post_type, post_format, post_content, post_media_url }:any) {
+  //   if (post_type == 'text') {
+  //     if (post_format == 'video') {
+  //     } else if (post_format == 'image') {
+  //     }
+  //   } else if (post_type == 'media') {
+  //     let finalId = '';
+  //     let finalUrl = '';
+
+  //     const {
+  //       id: videoId,
+  //       permalink_url,
+  //       ...all
+  //     } = await (
+  //       await fetch(
+  //         `https://graph.facebook.com/v20.0/${id}/videos?access_token=${access_token}&fields=id,permalink_url`,
+  //         {
+  //           method: 'POST',
+  //           headers: {
+  //             'Content-Type': 'application/json',
+  //           },
+  //           body: JSON.stringify({
+  //             file_url: post_media_url,
+  //             description: post_content,
+  //             published: true,
+  //           }),
+  //         },
+  //         'upload mp4'
+  //       )
+  //     ).json();
+
+  //     finalUrl = 'https://www.facebook.com/reel/' + videoId;
+  //     finalId = videoId;
+  //   }
+  // }
+>>>>>>> Stashed changes
 }

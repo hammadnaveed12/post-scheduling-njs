@@ -1,5 +1,10 @@
 import ScoialMedia from './SocialIntegration';
 
+<<<<<<< Updated upstream
+=======
+const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+>>>>>>> Stashed changes
 export default class InstagramIntegration extends ScoialMedia {
   apiBase;
   redirect_uri;
@@ -81,4 +86,190 @@ export default class InstagramIntegration extends ScoialMedia {
 
     return { data, error };
   }
+<<<<<<< Updated upstream
+=======
+
+  // async pages(accessToken: string) {
+  //   const { data, error } = await (
+  //     await fetch(
+  //       `https://graph.facebook.com/v20.0/me/accounts?fields=id,instagram_business_account,username,name,picture.type(large)&access_token=${accessToken}&limit=500`,
+  //     )
+  //   ).json();
+  //   console.log(error);
+
+  //   const onlyConnectedAccounts = await Promise.all(
+  //     data
+  //       .filter((f: any) => f.instagram_business_account)
+  //       .map(async (p: any) => {
+  //         return {
+  //           pageId: p.id,
+  //           ...(await (
+  //             await fetch(
+  //               `https://graph.facebook.com/v20.0/${p.instagram_business_account.id}?fields=name,profile_picture_url&access_token=${accessToken}&limit=500`,
+  //             )
+  //           ).json()),
+  //           id: p.instagram_business_account.id,
+  //         };
+  //       }),
+  //   );
+
+  //   return onlyConnectedAccounts.map((p: any) => ({
+  //     pageId: p.pageId,
+  //     id: p.id,
+  //     name: p.name,
+  //     picture: { data: { url: p.profile_picture_url } },
+  //   }));
+  // }
+
+  async get_id(access_token: string) {
+    const { user_id, name, username, profile_picture_url, error } = await (
+      await fetch(
+        `https://graph.instagram.com/v22.0/me?fields=user_id,name,username,profile_picture_url&access_token=${access_token}`,
+      )
+    ).json();
+
+    return user_id;
+  }
+
+  private async checkLoaded(
+    mediaContainerId: string,
+    accessToken: string,
+  ): Promise<boolean> {
+    let status = 'IN_PROGRESS';
+    while (status === 'IN_PROGRESS') {
+      const { status_code, error_message } = await (
+        await fetch(
+          `https://graph.instagram.com/v20.0/${mediaContainerId}?fields=status_code,error_message&access_token=${accessToken}`,
+        )
+      ).json();
+      await timer(3000);
+      status = status_code;
+
+      if (error_message) {
+        console.log(error_message);
+        throw new Error(error_message);
+        break;
+      }
+    }
+
+    if (status === 'FINISHED') {
+      await timer(2000);
+      return true;
+    }
+
+    await timer(2200);
+    return this.checkLoaded(mediaContainerId, accessToken);
+  }
+
+  async PostContent({
+    access_token,
+    post_type,
+    post_format,
+    post_content,
+    post_media_url,
+  }: any): Promise<any> {
+    const id = await this.get_id(access_token);
+
+    console.log('STARTING INSTAGRAM BOT', id);
+    console.log('STARTING INSTAGRAM BOT', access_token);
+
+    if (post_type == 'media') {
+      if (post_format == 'video') {
+        const media_type = 'REELS';
+        const searchParams = new URLSearchParams({
+          media_type,
+          text: post_content,
+          video_url: post_media_url,
+          access_token: access_token,
+        });
+
+        console.log('REEEL TYPE');
+
+        const { id: media_container_id, error: err } = await (
+          await fetch(
+            `https://graph.instagram.com/v20.0/${id}/media?${searchParams.toString()}`,
+            {
+              method: 'POST',
+            },
+          )
+        ).json();
+        console.log('REEEL TYPE ,errrr', err);
+        console.log('container_id', media_container_id);
+
+        await this.checkLoaded(media_container_id, access_token);
+
+        console.log('container_id', media_container_id);
+
+        const { id: media_id, error } = await (
+          await fetch(
+            `https://graph.instagram.com/v20.0/${id}/media_publish?creation_id=${media_container_id}&access_token=${access_token}`,
+            { method: 'POST' },
+          )
+        ).json();
+
+        console.log('media_id', media_id);
+        console.log('media_id', error);
+
+        const { permalink, ...all } = await (
+          await fetch(
+            `https://graph.instagram.com/v20.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
+          )
+        ).json();
+
+        console.log(permalink);
+
+        return permalink;
+      } else if (post_format == 'image') {
+        const { id: mediaContainerId, error } = await (
+          await fetch(
+            `https://graph.instagram.com/v20.0/${id}/media?image_url=${encodeURIComponent(post_media_url)}&caption=${encodeURIComponent(post_content)}&access_token=${access_token}`,
+            {
+              method: 'POST',
+            },
+          )
+        ).json();
+
+        console.log('Media container created:', mediaContainerId);
+        console.log('Media container created:', error);
+        let status = 'IN_PROGRESS';
+        while (status === 'IN_PROGRESS') {
+          const { status_code } = await (
+            await fetch(
+              `https://graph.instagram.com/v20.0/${mediaContainerId}?fields=status_code&access_token=${access_token}`,
+            )
+          ).json();
+          await timer(3000);
+          status = status_code;
+        }
+        console.log('Media processing complete.');
+
+        const { id: mediaId } = await (
+          await fetch(
+            `https://graph.instagram.com/v20.0/${id}/media_publish?creation_id=${mediaContainerId}&access_token=${access_token}&field=id`,
+            {
+              method: 'POST',
+            },
+          )
+        ).json();
+
+        console.log('Post published:', mediaId);
+
+        // Get post URL
+        const { permalink } = await (
+          await fetch(
+            `https://graph.instagram.com/v20.0/graph.facebook.com?fields=permalink&access_token=${access_token}`,
+          )
+        ).json();
+
+        console.log('Post URL:', permalink);
+
+        return {
+          postId: mediaId,
+          releaseURL: permalink,
+          status: 'success',
+        };
+      }
+    }
+  }
+>>>>>>> Stashed changes
 }

@@ -25,13 +25,22 @@ export default function EditPostForm({ post }: any) {
   const [content, setContent] = useState(post.content);
   const [media, setMedia] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(post.media_url);
+<<<<<<< Updated upstream
   const [scheduledTime, setScheduledTime] = useState('');
+=======
+  const [scheduledTime, setScheduledTime] = useState(post.schedule_time);
+>>>>>>> Stashed changes
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const router = useRouter();
   const supabase = getSupabaseBrowserClient();
+<<<<<<< Updated upstream
+=======
+  const [selectedPlatforms, setSelectedPlatforms] = useState<any>([]);
+
+>>>>>>> Stashed changes
   const fileInputRef = useRef<any>(null);
 
   useEffect(() => {
@@ -50,6 +59,26 @@ export default function EditPostForm({ post }: any) {
     fetchUserAccounts();
   }, [supabase]);
 
+<<<<<<< Updated upstream
+=======
+  function groupAccountsByPlatform(data: any) {
+    const groupedData: any = [];
+
+    data.forEach((item) => {
+      groupedData.push(item.social_accounts.platform);
+    });
+
+    return groupedData;
+  }
+
+  useEffect(() => {
+    if (post.selected_accounts.length >= 1) {
+      let data = groupAccountsByPlatform(post.selected_accounts);
+      setSelectedPlatforms(data);
+    }
+  }, [post]);
+
+>>>>>>> Stashed changes
   const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.[0]) {
       const file = event.target.files[0];
@@ -78,6 +107,7 @@ export default function EditPostForm({ post }: any) {
         media,
         coverImage || '',
         scheduledTime && scheduledTime !== 'draft' ? scheduledTime : null,
+<<<<<<< Updated upstream
         'draft',
       );
       if (updatedPost && updatedPost.length > 0 && coverImage) {
@@ -85,12 +115,62 @@ export default function EditPostForm({ post }: any) {
       }
 
       router.push('/home');
+=======
+        post.status,
+      );
+
+      let social_del = [];
+      post.selected_accounts.map(({ social_accounts, id }) => {
+        if (!selectedPlatforms.includes(social_accounts.platform)) {
+          social_del.push(id);
+        }
+      });
+
+      let social_add =
+        post.selected_accounts.length == 0
+          ? [...selectedPlatforms]
+          : selectedPlatforms.filter((item) => {
+              return !post.selected_accounts.find((a) => a.social_accounts.platform == item);
+            });
+
+      if (social_del.length >= 1) {
+        const { data, error } = await supabase
+          .from('selected_accounts')
+          .delete()
+          .in('id', social_del);
+        console.log(error);
+      }
+      const getSocialAccounts = await supabase
+        .from('social_accounts')
+        .select('id')
+        .eq('user_id', user.id)
+        .in('platform', social_add);
+
+      let val = getSocialAccounts.data?.map((item) => ({
+        post_id: post.id,
+        account_id: user.id,
+        social_accounts: item.id!,
+      }));
+
+      const addSelectedAccounts = await supabase
+        .from('selected_accounts')
+        .upsert(val);
+
+      router.push('/home/drafts');
+
+      // if (updatedPost && updatedPost.length > 0 && coverImage) {
+      //   await updateCoverImage(updatedPost[0]?.id!, coverImage);
+      // }
+
+      // router.push('/home');
+>>>>>>> Stashed changes
     } catch (error) {
       console.error('Error saving draft:', error);
     } finally {
       setLoading(false);
     }
   };
+<<<<<<< Updated upstream
   return (
     <Card>
       <CardContent>
@@ -116,6 +196,12 @@ export default function EditPostForm({ post }: any) {
           </label>
         </div> */}
 
+=======
+
+  return (
+    <Card>
+      <CardContent>
+>>>>>>> Stashed changes
         {/* Media Upload Section */}
         {postType === 'media' && (
           <div className="media-preview-container flex items-start justify-start gap-5">
@@ -197,8 +283,16 @@ export default function EditPostForm({ post }: any) {
 
         {/* Social Media Icons Placeholder */}
         <div className="mt-5 flex items-center justify-start gap-5">
+<<<<<<< Updated upstream
           <p>Add icons here</p>
           {/* <SelectPlatform type={post.type} /> */}
+=======
+          <SelectPlatform
+            type={post.type}
+            selectedPlatforms={selectedPlatforms}
+            setSelectedPlatforms={setSelectedPlatforms}
+          />
+>>>>>>> Stashed changes
         </div>
 
         {/* Save Draft Button */}

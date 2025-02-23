@@ -1,5 +1,10 @@
 import ScoialMedia from './SocialIntegration';
 
+<<<<<<< Updated upstream
+=======
+const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+>>>>>>> Stashed changes
 export default class ThreadsIntegration extends ScoialMedia {
   redirect_uri;
   client_key;
@@ -82,4 +87,176 @@ export default class ThreadsIntegration extends ScoialMedia {
 
     return { data, error };
   }
+<<<<<<< Updated upstream
+=======
+
+  async fetchPageInformation(accessToken: string) {
+    const { id, username, threads_profile_picture_url, access_token, error } =
+      await (
+        await fetch(
+          `https://graph.threads.net/v1.0/me?fields=id,username,threads_profile_picture_url&access_token=${accessToken}`,
+        )
+      ).json();
+
+    console.log(error);
+
+    return {
+      id,
+      name: username,
+      access_token,
+      picture: { data: { url: threads_profile_picture_url } },
+      username,
+    };
+  }
+
+  private async checkLoaded(
+    mediaContainerId: string,
+    accessToken: string,
+  ): Promise<boolean> {
+    const { status, id, error_message } = await (
+      await fetch(
+        `https://graph.threads.net/v1.0/${mediaContainerId}?fields=status,error_message&access_token=${accessToken}`,
+      )
+    ).json();
+
+    if (status === 'ERROR') {
+      console.log(error_message);
+      throw new Error(error_message);
+    }
+
+    if (status === 'FINISHED') {
+      await timer(2000);
+      return true;
+    }
+
+    await timer(2200);
+    return this.checkLoaded(mediaContainerId, accessToken);
+  }
+
+  async PostContent({
+    access_token,
+    post_type,
+    post_format,
+    post_content,
+    post_media_url,
+  }: any): Promise<any> {
+    const { id, ...data } = await this.fetchPageInformation(access_token);
+
+    if (post_type == 'text') {
+      const media_type = 'TEXT';
+      const searchParams = new URLSearchParams({
+        media_type,
+        text: post_content,
+        access_token: access_token,
+      });
+
+      const { id: media_container_id } = await (
+        await fetch(
+          `https://graph.threads.net/v1.0/${id}/threads?${searchParams.toString()}`,
+          {
+            method: 'POST',
+          },
+        )
+      ).json();
+
+      await this.checkLoaded(media_container_id, access_token);
+
+      console.log(media_container_id);
+
+      const { id: media_id, error } = await (
+        await fetch(
+          `https://graph.threads.net/v1.0/${id}/threads_publish?creation_id=${media_container_id}&access_token=${access_token}`,
+          { method: 'POST' },
+        )
+      ).json();
+
+      const { permalink, ...all } = await (
+        await fetch(
+          `https://graph.threads.net/v1.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
+        )
+      ).json();
+
+      console.log(permalink);
+
+      return permalink;
+    } else if (post_type == 'media') {
+      if (post_format == 'video') {
+        const media_type = 'VIDEO';
+        const searchParams = new URLSearchParams({
+          media_type,
+          text: post_content,
+          video_url: post_media_url,
+          access_token: access_token,
+        });
+
+        const { id: media_container_id } = await (
+          await fetch(
+            `https://graph.threads.net/v1.0/${id}/threads?${searchParams.toString()}`,
+            {
+              method: 'POST',
+            },
+          )
+        ).json();
+
+        await this.checkLoaded(media_container_id, access_token);
+
+        console.log(media_container_id);
+
+        const { id: media_id, error } = await (
+          await fetch(
+            `https://graph.threads.net/v1.0/${id}/threads_publish?creation_id=${media_container_id}&access_token=${access_token}`,
+            { method: 'POST' },
+          )
+        ).json();
+
+        const { permalink, ...all } = await (
+          await fetch(
+            `https://graph.threads.net/v1.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
+          )
+        ).json();
+
+        console.log(permalink);
+
+        return permalink;
+      } else if (post_format == 'image') {
+        const media_type = 'IMAGE';
+
+        const searchParams = new URLSearchParams({
+          media_type,
+          text: post_content,
+          image_url: post_media_url,
+          access_token: access_token,
+        });
+
+        const { id: media_container_id } = await (
+          await fetch(
+            `https://graph.threads.net/v1.0/${id}/threads?${searchParams.toString()}`,
+            {
+              method: 'POST',
+            },
+          )
+        ).json();
+
+        await this.checkLoaded(media_container_id, access_token);
+
+        console.log(media_container_id);
+
+        const { id: media_id, error } = await (
+          await fetch(
+            `https://graph.threads.net/v1.0/${id}/threads_publish?creation_id=${media_container_id}&access_token=${access_token}`,
+            { method: 'POST' },
+          )
+        ).json();
+
+        const { permalink, ...all } = await (
+          await fetch(
+            `https://graph.threads.net/v1.0/${media_id}?fields=id,permalink&access_token=${access_token}`,
+          )
+        ).json();
+
+        return permalink;
+      }
+    }
+  }
+>>>>>>> Stashed changes
 }
