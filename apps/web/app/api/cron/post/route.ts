@@ -125,5 +125,25 @@ export async function POST(req: NextRequest) {
     });
   });
 
+  //Check if post is completely posted:
+  const { data: postedPosts, error } = await supabase
+    .from('posts')
+    .select('*, selected_accounts(id, status)')
+    .eq('status', 'scheduled')
+    .eq('selected_accounts.status', 'pending');
+
+  if (postedPosts) {
+    await Promise.all(
+      postedPosts
+        .filter((post) => post.selected_accounts.length === 0) // Only process posts with no selected_accounts
+        .map((post) =>
+          supabase
+            .from('posts')
+            .update({ status: 'published' })
+            .eq('id', post.id),
+        ),
+    );
+  }
+
   return Response.json({ status: 200, message: 'Response Successful' });
 }
