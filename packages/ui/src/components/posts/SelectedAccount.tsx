@@ -7,11 +7,18 @@ import { useRouter } from 'next/navigation';
 
 import { RefreshCcw, X } from 'lucide-react';
 
-import BlueSkyIntegration from '../../../../../apps/web/lib/socials/BlueSkyIntegration';
-import facebookIcon from '../../../../../apps/web/public/icons/facebook-icon.svg';
-import instaIcon from '../../../../../apps/web/public/icons/instagram-icon.svg';
-import twitterIcon from '../../../../../apps/web/public/icons/twitter-icon.svg';
-import youtubeIcon from '../../../../../apps/web/public/icons/youtube-icon.svg';
+// import BlueSkyIntegration from '../../../../../apps/web/lib/socials/BlueSkyIntegration';
+// import facebookIcon from '../../../../../apps/web/public/icons/facebook-icon.svg';
+// import instaIcon from '../../../../../apps/web/public/icons/instagram-icon.svg';
+// import twitterIcon from '../../../../../apps/web/public/icons/twitter-icon.svg';
+// import youtubeIcon from '../../../../../apps/web/public/icons/youtube-icon.svg';
+// import threadsIcon from '../../../../../apps/web/public/icons/threads-icon.svg';
+// import blueskyIcon from '../../../../../apps/web/public/icons/bluesky-icon.svg';
+// import tiktokIcon from '../../../../../apps/web/public/icons/tiktok-icon.svg';
+// import linkedinIcon from '../../../../../apps/web/public/icons/linkedin-icon.svg';
+
+import getIcon from "../../../../../apps/web/lib/utils/icon"
+
 import { getSupabaseBrowserClient } from '../../../../supabase/src/clients/browser-client';
 import { Avatar, AvatarFallback, AvatarImage } from '../../shadcn/avatar';
 import { Button } from '../../shadcn/button';
@@ -32,15 +39,27 @@ import { Switch } from '../../shadcn/switch';
 import { GlobalLoader } from '../../makerkit/global-loader';
 import { LoadingOverlay } from '../../makerkit/loading-overlay';
 
+// const platforms = [
+//   { id: 'twitter', name: 'Twitter', icon: twitterIcon },
+//   { id: 'threads', name: 'threads', icon: threadsIcon },
+//   { id: 'bluesky', name: 'bluesky', icon: blueskyIcon },
+//   { id: 'instagram', name: 'instagram', icon: instaIcon },
+//   { id: 'facebook', name: 'facebook', icon: facebookIcon },
+//   { id: 'linkedin', name: 'LinkedIn', icon: linkedinIcon },
+//   { id: 'youtube', name: 'YouTube', icon: youtubeIcon },
+//   { id: 'tiktok', name: 'tiktok', icon: tiktokIcon },
+// ];
+
+
 const platforms = [
-  { id: 'twitter', name: 'Twitter', icon: twitterIcon },
-  { id: 'threads', name: 'threads', icon: facebookIcon },
-  { id: 'bluesky', name: 'bluesky', icon: twitterIcon },
-  { id: 'instagram', name: 'instagram', icon: facebookIcon },
-  { id: 'facebook', name: 'facebook', icon: facebookIcon },
-  { id: 'linkedin', name: 'LinkedIn', icon: instaIcon },
-  { id: 'youtube', name: 'YouTube', icon: youtubeIcon },
-  { id: 'tiktok', name: 'tiktok', icon: youtubeIcon },
+  { id: 'twitter', name: 'Twitter' },
+  { id: 'threads', name: 'threads' },
+  { id: 'bluesky', name: 'bluesky' },
+  { id: 'instagram', name: 'instagram' },
+  { id: 'facebook', name: 'facebook' },
+  { id: 'linkedin', name: 'LinkedIn' },
+  { id: 'youtube', name: 'YouTube' },
+  { id: 'tiktok', name: 'tiktok' },
 ];
 
 const initialAccounts = {
@@ -219,7 +238,7 @@ export default function SelectAccounts({
             <CardContent>
               <div className="mb-4 flex items-center space-x-2">
                 <Image
-                  src={platform.icon}
+                  src={getIcon(platform.id)}
                   alt={platform.name}
                   width={30}
                   height={30}
