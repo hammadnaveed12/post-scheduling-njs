@@ -6,7 +6,7 @@ export default class TwitterIntegration extends ScoialMedia {
   redirect_uri;
   client_key;
   client_secret;
-  scope;
+  scope: any;
   constructor() {
     super();
 
@@ -14,13 +14,7 @@ export default class TwitterIntegration extends ScoialMedia {
 
     this.client_key = process.env.TWITTER_CLIENT_ID;
     this.client_secret = process.env.TWITTER_CLIENT_SECRET;
-    this.scope = [
-      'https://www.googleapis.com/auth/userinfo.profile',
-      'https://www.googleapis.com/auth/userinfo.email',
-      'https://www.googleapis.com/auth/youtube',
-      'https://www.googleapis.com/auth/youtube.readonly',
-      'https://www.googleapis.com/auth/youtube.upload',
-    ];
+    this.scope = [];
   }
 
   async generateAuthUrl() {
