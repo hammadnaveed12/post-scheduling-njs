@@ -177,7 +177,7 @@ export default function Drafts() {
                           <Button
                             onClick={handleSchedule}
                             className="mt-4 w-full"
-                            disabled={loading}
+                            disabled={loading || !scheduleTime}
                           >
                             {loading ? 'Scheduling...' : 'Confirm'}
                           </Button>
