@@ -102,7 +102,10 @@ export async function getUserPosts(
   userId: string,
   status?: 'draft' | 'scheduled' | 'published',
 ) {
-  let query = supabase.from('posts').select('*').eq('user_id', userId);
+  let query = supabase
+    .from('posts')
+    .select('*, selected_accounts(social_accounts(*))')
+    .eq('user_id', userId);
   if (status) query = query.eq('status', status);
 
   const { data, error } = await query;

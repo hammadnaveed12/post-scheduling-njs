@@ -19,6 +19,7 @@ import { Input } from '../../shadcn/input';
 import { Label } from '../../shadcn/label';
 import { ScrollArea } from '../../shadcn/scroll-area';
 import { Separator } from '../../shadcn/separator';
+import getIcon from '../../../../../apps/web/lib/utils/icon';
 
 export default function Drafts() {
   const [drafts, setDrafts] = useState<any[]>([]);
@@ -123,34 +124,24 @@ export default function Drafts() {
                       </DropdownMenuContent>
                     </DropdownMenu> */}
                     <div className="mt-3 flex items-center justify-center gap-5">
-                      <Image
-                        src={facebookIcon}
-                        alt="facebook-icon"
+
+                      {post.selected_accounts.length >= 1  ? 
+                     post.selected_accounts.map(({social_accounts}:any) => (
+
+                      <>
+                       <Image
+                        src={getIcon(social_accounts.platform!)}
+                        alt={social_accounts.platform + "-icon"}
                         width={32}
                         height={32}
                         className="border-2 border-black p-1"
                       />
-                      <Image
-                        src={youtubeIcon}
-                        alt="youtube-icon"
-                        width={32}
-                        height={32}
-                        className="border-2 border-black p-1"
-                      />
-                      <Image
-                        src={instaIcon}
-                        alt="instagram-icon"
-                        width={32}
-                        height={32}
-                        className="border-2 border-black p-1"
-                      />
-                      <Image
-                        src={twitterIcon}
-                        alt="twitter-icon"
-                        width={32}
-                        height={32}
-                        className="border-2 border-black p-1"
-                      />
+                      </>
+
+                     ))
+                      :null}
+
+                    
                     </div>
 
                     {/* Action Buttons */}
@@ -164,7 +155,8 @@ export default function Drafts() {
                       </Button>
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button onClick={() => setSelectedPost(post.id)}>
+                          <Button onClick={() => setSelectedPost(post.id)}
+                            disabled={post.selected_accounts.length <= 0}>
                             Schedule
                           </Button>
                         </DialogTrigger>
