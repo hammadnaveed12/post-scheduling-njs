@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogTrigger } from '../../shadcn/dialog';
 import { Input } from '../../shadcn/input';
 import { Label } from '../../shadcn/label';
 import { Textarea } from '../../shadcn/textarea';
+import SelectPlatform from '../SelectPlatform';
 
 export default function NewPostForm() {
   const [postType, setPostType] = useState<'text' | 'media'>('text');
@@ -30,6 +31,7 @@ export default function NewPostForm() {
   const router = useRouter();
   const supabase = getSupabaseBrowserClient();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<any>([]);
 
   useEffect(() => {
     async function fetchUserAccounts() {
@@ -75,9 +77,40 @@ export default function NewPostForm() {
         scheduledTime && scheduledTime !== 'draft' ? scheduledTime : null,
         'draft',
       );
+
+      let social_add = [...selectedPlatforms]
+      
+      console.log("social_add: ", social_add)
+
+      const getSocialAccounts = await supabase
+      .from('social_accounts')
+      .select('id, active, platform')
+      .eq('user_id', user.id)
+      .eq('active', true)
+      .in('platform', social_add);
+
+      console.log(post)
+      console.log("social_accounts data: ", getSocialAccounts.data)
+
+
+    let val = getSocialAccounts.data?.map((item) => ({
+      post_id: post[0].id!,
+      account_id: user.id,
+      social_accounts: item.id!,
+    }));
+    console.log("value data: ", val)
+
+
+    const addSelectedAccounts = await supabase
+    .from('selected_accounts')
+    .upsert(val);
+
       if (post && post.length > 0 && coverImage) {
         await updateCoverImage(post[0].id, coverImage);
       }
+
+
+      console.log(addSelectedAccounts.error)
 
       router.push('/home/drafts');
     } catch (error) {
@@ -96,7 +129,9 @@ export default function NewPostForm() {
               type="radio"
               value="text"
               checked={postType === 'text'}
-              onChange={() => setPostType('text')}
+              onChange={() => {
+                setSelectedPlatforms([])
+                setPostType('text')}}
             />
             Text Post
           </label>
@@ -105,7 +140,9 @@ export default function NewPostForm() {
               type="radio"
               value="media"
               checked={postType === 'media'}
-              onChange={() => setPostType('media')}
+              onChange={() => {
+                setSelectedPlatforms([])
+                setPostType('media')}}
             />
             Media Post
           </label>
@@ -192,7 +229,12 @@ export default function NewPostForm() {
 
         {/* Social Media Icons Placeholder */}
         <div className="mt-5 flex items-center justify-start gap-5">
-          <p>Add icons here</p>
+          {/* <p>Add icons here</p> */}
+          <SelectPlatform
+            type={postType}
+            selectedPlatforms={selectedPlatforms}
+            setSelectedPlatforms={setSelectedPlatforms}
+          />
         </div>
 
         {/* Save Draft Button */}
