@@ -7,15 +7,10 @@ import { useRouter } from 'next/navigation';
 
 import { RefreshCcw, X } from 'lucide-react';
 
-// import BlueSkyIntegration from '../../../../../apps/web/lib/socials/BlueSkyIntegration';
-// import facebookIcon from '../../../../../apps/web/public/icons/facebook-icon.svg';
-// import instaIcon from '../../../../../apps/web/public/icons/instagram-icon.svg';
-// import twitterIcon from '../../../../../apps/web/public/icons/twitter-icon.svg';
-// import youtubeIcon from '../../../../../apps/web/public/icons/youtube-icon.svg';
-// import threadsIcon from '../../../../../apps/web/public/icons/threads-icon.svg';
-// import blueskyIcon from '../../../../../apps/web/public/icons/bluesky-icon.svg';
-// import tiktokIcon from '../../../../../apps/web/public/icons/tiktok-icon.svg';
-// import linkedinIcon from '../../../../../apps/web/public/icons/linkedin-icon.svg';
+import BlueSkyIntegration from '../../../../../apps/web/lib/socials/BlueSkyIntegration';
+
+
+
 
 import getIcon from "../../../../../apps/web/lib/utils/icon"
 
