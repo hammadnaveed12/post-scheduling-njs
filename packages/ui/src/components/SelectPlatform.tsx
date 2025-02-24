@@ -106,13 +106,17 @@ function SelectPlatform({
           .eq('user_id', user.id)
           .eq('active', true);
 
+          if(!social_accounts.data || social_accounts.data.length <= 0 ){
+              return
+          }
+
         const platforms: any = groupAccountsByPlatform(social_accounts.data);
 
         setPlatforms(platforms);
 
         console.log('Fetched published posts:', platforms);
       } catch (error) {
-        console.error('Error fetching published posts:', error);
+        console.log('Error fetching published posts:', error);
       }
     }
     getPlatformsForUser();
@@ -128,7 +132,7 @@ function SelectPlatform({
 
   return (
     <div className="mt-3 flex items-center justify-center gap-5">
-      {availablePlatforms.map((platform: any) => (
+      {availablePlatforms && availablePlatforms.map((platform: any) => (
         <label key={platform.platform} className="flex items-center space-x-2">
           <input
             type="checkbox"
