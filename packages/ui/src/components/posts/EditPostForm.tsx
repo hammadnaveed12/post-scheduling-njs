@@ -25,7 +25,7 @@ export default function EditPostForm({ post }: any) {
   const [content, setContent] = useState(post.content);
   const [media, setMedia] = useState<File | null>(null);
   const [coverImage, setCoverImage] = useState<string | null>(post.media_url);
-  const [scheduledTime, setScheduledTime] = useState(post.schedule_time);
+  const [scheduledTime, setScheduledTime] = useState(post.scheduled_time);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,6 +49,7 @@ export default function EditPostForm({ post }: any) {
         }
       }
     }
+
     fetchUserAccounts();
   }, [supabase]);
 
@@ -123,8 +124,9 @@ export default function EditPostForm({ post }: any) {
       }
       const getSocialAccounts = await supabase
         .from('social_accounts')
-        .select('id')
+        .select('id, active, platform')
         .eq('user_id', user.id)
+        .eq('active', true)
         .in('platform', social_add);
 
       let val = getSocialAccounts.data?.map((item) => ({
@@ -137,8 +139,15 @@ export default function EditPostForm({ post }: any) {
         .from('selected_accounts')
         .upsert(val);
 
-      router.push('/home/drafts');
 
+        if(post.status == "scheduled"){
+          router.push('/home/scheduled');
+
+        }else {
+
+        
+      router.push('/home/drafts');
+        }
       // if (updatedPost && updatedPost.length > 0 && coverImage) {
       //   await updateCoverImage(updatedPost[0]?.id!, coverImage);
       // }
