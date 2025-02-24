@@ -17,6 +17,7 @@ import { Card, CardContent } from '../../shadcn/card';
 import { ScrollArea } from '../../shadcn/scroll-area';
 import { Separator } from '../../shadcn/separator';
 import { LoadingOverlay } from '../../makerkit/loading-overlay';
+import getIcon from '../../../../../apps/web/lib/utils/icon';
 
 
 function formatTimestamp(timestamp) {
@@ -128,34 +129,26 @@ export default function Schedules() {
                     <p className="mt-2 text-sm">{post.content}</p>
 
                     <div className="mt-3 flex items-center justify-center gap-5">
-                      <Image
-                        src={facebookIcon}
-                        alt="facebook-icon"
+
+
+ {post.selected_accounts.length >= 1  ? 
+                     post.selected_accounts.map(({social_accounts}:any) => (
+
+                      <>
+                       <Image
+                        src={getIcon(social_accounts.platform!)}
+                        alt={social_accounts.platform + "-icon"}
                         width={32}
                         height={32}
                         className="border-2 border-black p-1"
                       />
-                      <Image
-                        src={youtubeIcon}
-                        alt="youtube-icon"
-                        width={32}
-                        height={32}
-                        className="border-2 border-black p-1"
-                      />
-                      <Image
-                        src={instaIcon}
-                        alt="instagram-icon"
-                        width={32}
-                        height={32}
-                        className="border-2 border-black p-1"
-                      />
-                      <Image
-                        src={twitterIcon}
-                        alt="twitter-icon"
-                        width={32}
-                        height={32}
-                        className="border-2 border-black p-1"
-                      />
+                      </>
+
+                     ))
+                      :null}
+
+
+                      
                     </div>
 
                     <div className='pt-4'>
