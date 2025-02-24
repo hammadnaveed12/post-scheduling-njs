@@ -35,7 +35,7 @@ export async function getUserAccounts(userId: string) {
   const { data, error } = await supabase
     .from('accounts')
     .select('*')
-    .eq('user_id', userId);
+    .eq('id', userId);
 
   if (error) throw error;
   return data;
