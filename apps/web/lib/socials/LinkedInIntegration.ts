@@ -25,7 +25,7 @@ export default class LinkedInIntegration extends ScoialMedia {
   constructor() {
     super();
 
-    this.redirect_uri = `https://redirectmeto.com/http://localhost:3000/api/auth/callback/linkedin/`;
+    this.redirect_uri = `https://redirectmeto.com/${process.env.SITE_URL}/api/auth/callback/linkedin/`;
 
     this.client_key = process.env.LINKEDIN_CLIENT_ID;
     this.client_secret = process.env.LINKEDIN_CLIENT_SECRET;

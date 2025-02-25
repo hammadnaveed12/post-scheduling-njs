@@ -33,7 +33,7 @@ export async function GET(req: any) {
 
     if (error) throw error;
 
-    return Response.redirect('http://localhost:3000/home/accounts');
+    return Response.redirect(`${process.env.SITE_URL}/home/accounts`);
   } catch (err: any) {
     return Response.json({ error: err.message }, { status: 500 });
   }

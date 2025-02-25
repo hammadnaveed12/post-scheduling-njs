@@ -11,7 +11,7 @@ export default class TwitterIntegration extends ScoialMedia {
   constructor() {
     super();
 
-    this.redirect_uri = `http://localhost:3000/api/auth/callback/twitter/`;
+    this.redirect_uri = `${process.env.SITE_URL}/api/auth/callback/twitter/`;
 
     this.client_key = process.env.TWITTER_CLIENT_ID;
     this.client_secret = process.env.TWITTER_CLIENT_SECRET;

@@ -10,7 +10,7 @@ const clientAndYoutube = () => {
   const client = new google.auth.OAuth2({
     clientId: process.env.YOUTUBE_CLIENT_ID,
     clientSecret: process.env.YOUTUBE_CLIENT_SECRET,
-    redirectUri: `http://localhost:3000/api/auth/callback/youtube/`,
+    redirectUri: `${process.env.SITE_URL}/api/auth/callback/youtube/`,
   });
 
   const youtube = (newClient: OAuth2Client) =>
@@ -36,7 +36,7 @@ export default class YoutubeIntegration extends ScoialMedia {
   constructor() {
     super();
 
-    this.redirect_uri = `http://localhost:3000/api/auth/callback/youtube/`;
+    this.redirect_uri = `${process.env.SITE_URL}/api/auth/callback/youtube/`;
 
     this.client_key = process.env.YOUTUBE_CLIENT_ID;
     this.client_secret = process.env.YOUTUBE_CLIENT_SECRET;
@@ -220,6 +220,11 @@ export default class YoutubeIntegration extends ScoialMedia {
     } catch (err: any) {
       console.log('errrror', err);
       console.log('errrror', err.errors);
+
+      if (err == 'Invalid Credentials') {
+        const supabase = getSupabaseServerClient();
+        await this.refresh(refresh_token, supabase, social_acc_id);
+      }
 
       if (
         err.response?.data?.error?.errors?.[0]?.reason === 'failedPrecondition'

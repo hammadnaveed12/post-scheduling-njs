@@ -10,7 +10,7 @@ export default class TikTokIntegration extends ScoialMedia {
   constructor() {
     super();
     this.apiBase = 'https://open.tiktokapis.com/v2';
-    this.redirect_uri = `https://redirectmeto.com/http://localhost:3000/api/auth/callback/tiktok/`;
+    this.redirect_uri = `https://redirectmeto.com/${process.env.SITE_URL}/api/auth/callback/tiktok/`;
     this.client_key = process.env.TIKTOK_CLIENT_ID;
     this.client_secret = process.env.TIKTOK_CLIENT_SECRET;
   }

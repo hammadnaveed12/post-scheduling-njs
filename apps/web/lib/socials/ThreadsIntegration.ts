@@ -12,7 +12,7 @@ export default class ThreadsIntegration extends ScoialMedia {
   constructor() {
     super();
 
-    this.redirect_uri = `https://redirectmeto.com/http://localhost:3000/api/auth/callback/threads/`;
+    this.redirect_uri = `https://redirectmeto.com/${process.env.SITE_URL}/api/auth/callback/threads/`;
 
     this.client_key = process.env.THREADS_CLIENT_ID;
     this.client_secret = process.env.THREADS_CLIENT_SECRET;

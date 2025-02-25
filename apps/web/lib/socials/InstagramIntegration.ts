@@ -10,7 +10,7 @@ export default class InstagramIntegration extends ScoialMedia {
   client_secret;
   constructor() {
     super();
-    this.redirect_uri = `https://redirectmeto.com/http://localhost:3000/api/auth/callback/instagram/`;
+    this.redirect_uri = `https://redirectmeto.com/${process.env.SITE_URL}/api/auth/callback/instagram/`;
     this.client_key = process.env.INSTAGRAM_CLIENT_ID;
     this.client_secret = process.env.INSTAGRAM_CLIENT_SECRET;
   }
