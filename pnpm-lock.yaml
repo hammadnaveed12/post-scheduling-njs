@@ -11,21 +11,9 @@ importers:
 
   .:
     dependencies:
-<<<<<<< Updated upstream
-      google-auth-library:
-        specifier: ^9.15.1
-        version: 9.15.1
-      googleapis:
-        specifier: ^144.0.0
-        version: 144.0.0
-      twitter-api-v2:
-        specifier: ^1.20.1
-        version: 1.20.1
-=======
-      child_process:
+      base64-arraybuffer:
         specifier: ^1.0.2
         version: 1.0.2
->>>>>>> Stashed changes
     devDependencies:
       '@atproto/api':
         specifier: ^0.14.2
@@ -45,18 +33,18 @@ importers:
       axios:
         specifier: ^1.7.9
         version: 1.7.9
+      child_process:
+        specifier: ^1.0.2
+        version: 1.0.2
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
-<<<<<<< Updated upstream
-=======
       google-auth-library:
         specifier: ^9.15.1
         version: 9.15.1
       googleapis:
         specifier: ^144.0.0
         version: 144.0.0
->>>>>>> Stashed changes
       next-auth:
         specifier: ^4.24.11
         version: 4.24.11(@auth/core@0.37.4)(next@15.1.5(@opentelemetry/api@1.9.0)(@playwright/test@1.49.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -2123,6 +2111,10 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  base64-arraybuffer@1.0.2:
+    resolution: {integrity: sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==}
+    engines: {node: '>= 0.6.0'}
 
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
@@ -6465,6 +6457,8 @@ snapshots:
       '@babel/types': 7.26.0
 
   balanced-match@1.0.2: {}
+
+  base64-arraybuffer@1.0.2: {}
 
   base64-js@1.5.1: {}
 

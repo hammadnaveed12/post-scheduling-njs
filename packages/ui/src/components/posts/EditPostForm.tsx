@@ -95,8 +95,8 @@ export default function EditPostForm({ post }: any) {
         postType,
         content,
         post,
-        media,
-        coverImage || '',
+        media ,
+        post.cover_image_url || '',
         scheduledTime && scheduledTime !== 'draft' ? scheduledTime : null,
         post.status,
       );

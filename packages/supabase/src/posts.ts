@@ -1,3 +1,5 @@
+import { decode } from 'base64-arraybuffer';
+
 import { getSupabaseBrowserClient } from './clients/browser-client';
 
 const supabase = getSupabaseBrowserClient();
@@ -8,7 +10,7 @@ export async function createPost(
   type: 'text' | 'media',
   content: string | null,
   mediaUrl?: File | null,
-  coverImageUrl?: string,
+  coverImageUrl?: string | null,
   scheduledTime?: string | null,
   status: 'draft' | 'scheduled' | 'published' = 'draft',
 ) {
@@ -21,25 +23,43 @@ export async function createPost(
     scheduled_time: scheduledTime,
     status,
   };
+  const post_name = `${Date.now()}`;
+  const fileName = `cover-${post_name}`;
 
   if (type == 'media') {
     const { data: res, error: err } = await supabase.storage
       .from('post_media')
-      .upload(`${mediaUrl!.name}`, mediaUrl!, {
+      .upload(`${post_name}-${mediaUrl!.name}`, mediaUrl!, {
         cacheControl: '3600',
         upsert: false,
       });
 
-    console.log(err);
+    if (coverImageUrl) {
+      const base64Response = await fetch(coverImageUrl);
+      const file = await base64Response.blob(); // Convert to Blob
+      const fileObject = new File([file], fileName, { type: 'image/png' });
+
+      const { data: res, error: err } = await supabase.storage
+        .from('post_media')
+        .upload(`${fileName}`, fileObject, {
+          contentType: 'image/png',
+        });
+    }
 
     const {
       data: { publicUrl },
     } = await supabase.storage
       .from('post_media')
-      .getPublicUrl(`${mediaUrl!.name}`);
+      .getPublicUrl(`${post_name}-${mediaUrl!.name}`);
+
+    const {
+      data: { publicUrl: coverUrl },
+    } = await supabase.storage.from('post_media').getPublicUrl(`${fileName}`);
+
+    console.log('COVER URL:: ', coverUrl);
 
     value.format = mediaUrl?.type.startsWith('image/') ? 'image' : 'video';
-    value.cover_image_url = publicUrl;
+    value.cover_image_url = coverUrl;
     value.media_url = publicUrl;
   }
 
@@ -62,7 +82,6 @@ export async function updatePost(
   let value: any = {
     user_id: userId,
     content,
-    media_url: coverImageUrl,
     cover_image_url: coverImageUrl,
     scheduled_time: scheduledTime,
     status,
@@ -82,7 +101,6 @@ export async function updatePost(
       .from('post_media')
       .getPublicUrl(`${mediaUrl!.name}`);
 
-    value.cover_image_url = image;
     value.media_url = image;
     value.format = mediaUrl?.type.startsWith('image/') ? 'image' : 'video';
   }

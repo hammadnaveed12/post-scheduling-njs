@@ -131,7 +131,12 @@ export default class ThreadsIntegration extends ScoialMedia {
   }
 
   private async updateSelectedAccountStatus(id: any) {
-    await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
+    console.log('Sending message', id);
+    console.log(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
+
+    await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`, {
+      method: 'GET',
+    });
   }
 
   async PostContent({

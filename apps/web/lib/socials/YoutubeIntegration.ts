@@ -113,6 +113,7 @@ export default class YoutubeIntegration extends ScoialMedia {
     post_format,
     post_content,
     post_media_url,
+    cover_media_url,
     selected_acc_id,
   }: any) {
     const { client, youtube } = clientAndYoutube();
@@ -146,6 +147,22 @@ export default class YoutubeIntegration extends ScoialMedia {
           body: response.data,
         },
       });
+
+      if (cover_media_url) {
+        console.log(cover_media_url);
+        const response = await axios({
+          url: cover_media_url,
+          method: 'GET',
+          responseType: 'stream',
+        });
+
+        const allb = await youtubeClient.thumbnails.set({
+          videoId: all?.data?.id!,
+          media: {
+            body: response.data,
+          },
+        });
+      }
 
       console.log(all.statusText);
 

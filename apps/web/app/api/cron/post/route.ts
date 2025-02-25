@@ -7,6 +7,7 @@ import InstagramIntegration from '~/lib/socials/InstagramIntegration';
 import LinkedInIntegration from '~/lib/socials/LinkedInIntegration';
 import ThreadsIntegration from '~/lib/socials/ThreadsIntegration';
 import TikTokIntegration from '~/lib/socials/TikTokIntegration';
+import TwitterIntegration from '~/lib/socials/TwitterIntegration';
 import YoutubeIntegration from '~/lib/socials/YoutubeIntegration';
 
 function addMinutes(date: Date, minutes: number) {
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
-          id,
+          selected_acc_id: id,
         });
 
         console.log(permalink);
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
-          id,
+          selected_acc_id: id,
         });
 
         console.log(permalink);
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
-          id,
+          selected_acc_id: id,
         });
 
         console.log(permalink);
@@ -92,6 +93,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
+          selected_acc_id: id,
         });
 
         console.log(permalink);
@@ -104,20 +106,33 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
-          id,
+          selected_acc_id: id,
         });
 
         console.log(permalink);
       } else if (social_accounts?.platform == 'youtube') {
         const yt_client = new YoutubeIntegration();
-        console.log('youtube', social_accounts);
         const permalink = await yt_client.PostContent({
           access_token: social_accounts.access_token,
           post_type: item.type,
           post_format: item.format,
           post_content: item.content,
+          cover_media_url: item.cover_image_url,
           post_media_url: item.media_url,
-          id,
+          selected_acc_id: id,
+        });
+
+        console.log(permalink);
+      } else if (social_accounts?.platform == 'twitter') {
+        const tw_client = new TwitterIntegration();
+        console.log('youtube', social_accounts);
+        const permalink = await tw_client.PostContent({
+          access_token: social_accounts.access_token,
+          post_type: item.type,
+          post_format: item.format,
+          post_content: item.content,
+          post_media_url: item.media_url,
+          selected_acc_id: id,
         });
 
         console.log(permalink);

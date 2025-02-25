@@ -9,9 +9,6 @@ import { RefreshCcw, X } from 'lucide-react';
 
 import BlueSkyIntegration from '../../../../../apps/web/lib/socials/BlueSkyIntegration';
 
-
-
-
 import getIcon from "../../../../../apps/web/lib/utils/icon"
 
 import { getSupabaseBrowserClient } from '../../../../supabase/src/clients/browser-client';
@@ -33,17 +30,6 @@ import { Separator } from '../../shadcn/separator';
 import { Switch } from '../../shadcn/switch';
 import { GlobalLoader } from '../../makerkit/global-loader';
 import { LoadingOverlay } from '../../makerkit/loading-overlay';
-
-// const platforms = [
-//   { id: 'twitter', name: 'Twitter', icon: twitterIcon },
-//   { id: 'threads', name: 'threads', icon: threadsIcon },
-//   { id: 'bluesky', name: 'bluesky', icon: blueskyIcon },
-//   { id: 'instagram', name: 'instagram', icon: instaIcon },
-//   { id: 'facebook', name: 'facebook', icon: facebookIcon },
-//   { id: 'linkedin', name: 'LinkedIn', icon: linkedinIcon },
-//   { id: 'youtube', name: 'YouTube', icon: youtubeIcon },
-//   { id: 'tiktok', name: 'tiktok', icon: tiktokIcon },
-// ];
 
 
 const platforms = [

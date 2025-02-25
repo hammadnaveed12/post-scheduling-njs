@@ -12,11 +12,15 @@ import { selectAccountsForPost } from '../../../../supabase/src/selectedAccounts
 import { getUserAccounts } from '../../../../supabase/src/selectedAccounts';
 import { Button } from '../../shadcn/button';
 import { Card, CardContent } from '../../shadcn/card';
-import { Dialog, DialogContent, DialogTrigger } from '../../shadcn/dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from '../../shadcn/dialog';
 import { Input } from '../../shadcn/input';
 import { Label } from '../../shadcn/label';
 import { Textarea } from '../../shadcn/textarea';
 import SelectPlatform from '../SelectPlatform';
+import { DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
+import VideoThumbnailSelector from './ThumbnailSelector';
+import { GlobalLoader } from '../../makerkit/global-loader';
+import { LoadingOverlay } from '../../makerkit/loading-overlay';
 
 export default function NewPostForm() {
   const [postType, setPostType] = useState<'text' | 'media'>('text');
@@ -32,6 +36,9 @@ export default function NewPostForm() {
   const supabase = getSupabaseBrowserClient();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedPlatforms, setSelectedPlatforms] = useState<any>([]);
+  const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(null);
+  const [thumbnails, setThumbnails] = useState<string[]>([]);
+
 
   useEffect(() => {
     async function fetchUserAccounts() {
@@ -73,7 +80,7 @@ export default function NewPostForm() {
         postType,
         content,
         media,
-        coverImage || '',
+        selectedThumbnail ,
         scheduledTime && scheduledTime !== 'draft' ? scheduledTime : null,
         'draft',
       );
@@ -105,9 +112,9 @@ export default function NewPostForm() {
     .from('selected_accounts')
     .upsert(val);
 
-      if (post && post.length > 0 && coverImage) {
-        await updateCoverImage(post[0].id, coverImage);
-      }
+      // if (post && post.length > 0 && coverImage) {
+      //   await updateCoverImage(post[0].id, coverImage);
+      // }
 
 
       console.log(addSelectedAccounts.error)
@@ -121,6 +128,7 @@ export default function NewPostForm() {
   };
   return (
     <Card>
+      {loading ? <LoadingOverlay/>: null}
       <CardContent>
         {/* Post Type Selection */}
         <div className="flex items-center justify-start gap-10 py-5">
@@ -223,10 +231,34 @@ export default function NewPostForm() {
         <Textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="h-64 w-3/4"
+          className="h-64 w-3/4 mt-2"
           placeholder="Write post text here."
         />
 
+
+              
+
+        {media && media.type.startsWith("video/") ? 
+        <Dialog >
+                          <DialogTrigger asChild>
+                            <Button className="mt-2 w-full max-w-[200px]">Generate Thumbnails</Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Click to select thumbnail</DialogTitle>
+                              {/* <DialogDescription>
+                                Get your bluesky app password from the bluesky
+                                application.
+                              </DialogDescription> */}
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <VideoThumbnailSelector videoFile={media} selectedThumbnail={selectedThumbnail} thumbnails={thumbnails} setThumbnails={setThumbnails} setLoading={setLoading} setSelectedThumbnail={setSelectedThumbnail}/>
+                            </div>
+                            <DialogFooter>
+                 
+                            </DialogFooter>
+                          </DialogContent>{' '}
+                        </Dialog>: null}
         {/* Social Media Icons Placeholder */}
         <div className="mt-5 flex items-center justify-start gap-5">
           {/* <p>Add icons here</p> */}

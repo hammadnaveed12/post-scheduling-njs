@@ -5,13 +5,11 @@ import ScoialMedia from './SocialIntegration';
 const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export default class InstagramIntegration extends ScoialMedia {
-  apiBase;
   redirect_uri;
   client_key;
   client_secret;
   constructor() {
     super();
-    this.apiBase = 'https://open.tiktokapis.com/v2';
     this.redirect_uri = `https://redirectmeto.com/http://localhost:3000/api/auth/callback/instagram/`;
     this.client_key = process.env.INSTAGRAM_CLIENT_ID;
     this.client_secret = process.env.INSTAGRAM_CLIENT_SECRET;
@@ -125,6 +123,7 @@ export default class InstagramIntegration extends ScoialMedia {
     return this.checkLoaded(mediaContainerId, accessToken);
   }
   private async updateSelectedAccountStatus(id: any) {
+    console.log('Sending message');
     await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
   }
 
