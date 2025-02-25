@@ -114,6 +114,8 @@ export async function POST(req: NextRequest) {
         const yt_client = new YoutubeIntegration();
         const permalink = await yt_client.PostContent({
           access_token: social_accounts.access_token,
+          refresh_token: social_accounts.refresh_token,
+          social_account_id: social_accounts.id,
           post_type: item.type,
           post_format: item.format,
           post_content: item.content,

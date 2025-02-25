@@ -2,6 +2,8 @@ import axios from 'axios';
 import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
 import { google } from 'googleapis';
 
+import { getSupabaseServerClient } from '@kit/supabase/server-client';
+
 import ScoialMedia from './SocialIntegration';
 
 const clientAndYoutube = () => {
@@ -64,6 +66,39 @@ export default class YoutubeIntegration extends ScoialMedia {
     return url;
   }
 
+  async refresh(refresh_token: string, supabase: any, id?: string) {
+    const { client, oauth2 } = clientAndYoutube();
+    client.setCredentials({ refresh_token });
+    const { credentials } = await client.refreshAccessToken();
+    const user = oauth2(client);
+    const expiryDate = new Date(credentials.expiry_date!);
+    const unixTimestamp =
+      Math.floor(expiryDate.getTime() / 1000) -
+      Math.floor(new Date().getTime() / 1000);
+
+    const { data } = await user.userinfo.get();
+
+    if (id && credentials.access_token) {
+      const { update, error } = await supabase.from('social_accounts').update({
+        access_token: credentials.access_token!,
+        refresh_token_token: credentials.refresh_token!,
+      });
+
+      console.log(update);
+      console.log(error);
+    }
+
+    return {
+      accessToken: credentials.access_token!,
+      expiresIn: unixTimestamp!,
+      refreshToken: credentials.refresh_token!,
+      id: data.id!,
+      name: data.name!,
+      picture: data.picture!,
+      username: '',
+    };
+  }
+
   async Authorize(code: string) {
     // Value to use for getting Access Token
 
@@ -77,7 +112,7 @@ export default class YoutubeIntegration extends ScoialMedia {
 
     return {
       access_token: tokens.access_token!,
-      refresh_token: '',
+      refresh_token: tokens.refresh_token!,
       avatar_url: data.picture,
       username: data.name,
     };
@@ -109,6 +144,8 @@ export default class YoutubeIntegration extends ScoialMedia {
 
   async PostContent({
     access_token,
+    refresh_token,
+    social_acc_id,
     post_type,
     post_format,
     post_content,
@@ -117,11 +154,9 @@ export default class YoutubeIntegration extends ScoialMedia {
     selected_acc_id,
   }: any) {
     const { client, youtube } = clientAndYoutube();
+    console.log(access_token);
     client.setCredentials({ access_token: access_token });
     const youtubeClient = youtube(client);
-
-    console.log(youtubeClient.channels);
-    console.log(youtubeClient.videos.list);
 
     console.log('Youtuuuube');
     const response = await axios({
@@ -133,7 +168,7 @@ export default class YoutubeIntegration extends ScoialMedia {
     try {
       const all = await youtubeClient.videos.insert({
         part: ['id', 'snippet', 'status'],
-        notifySubscribers: false,
+        notifySubscribers: true,
         requestBody: {
           snippet: {
             title: post_content,
@@ -165,6 +200,10 @@ export default class YoutubeIntegration extends ScoialMedia {
       }
 
       console.log(all.statusText);
+      if (all.statusText == 'Invalid Credentials') {
+        const supabase = getSupabaseServerClient();
+        await this.refresh(refresh_token, supabase, social_acc_id);
+      }
 
       if (all?.data?.id!) {
         await this.updateSelectedAccountStatus(selected_acc_id);
