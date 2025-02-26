@@ -226,7 +226,7 @@ export default class LinkedInIntegration extends ScoialMedia {
     post_format,
     post_content,
     post_media_url,
-    id: selected_acc_id,
+    selected_acc_id,
   }: any) {
     const id = await this.getId(access_token);
     console.log('id', id);

@@ -133,7 +133,7 @@ export default class InstagramIntegration extends ScoialMedia {
     post_format,
     post_content,
     post_media_url,
-    id: selected_acc_id,
+    selected_acc_id,
   }: any): Promise<any> {
     const id = await this.get_id(access_token);
 

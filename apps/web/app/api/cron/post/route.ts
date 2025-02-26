@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
           post_format: item.format,
           post_content: item.content,
           post_media_url: item.media_url,
-          id,
+          selected_acc_id: id,
         });
 
         console.log(permalink);

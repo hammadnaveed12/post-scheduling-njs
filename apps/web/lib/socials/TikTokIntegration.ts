@@ -123,13 +123,16 @@ export default class TikTokIntegration extends ScoialMedia {
       await timer(3000);
     }
   }
-
+  private async updateSelectedAccountStatus(id: any) {
+    await fetch(`${process.env.SITE_URL}/api/auth/selectedacc?id=${id}`);
+  }
   async PostContent({
     access_token,
     post_type,
     post_format,
     post_content,
     post_media_url,
+    selected_acc_id,
   }: any) {
     const {
       data: {
@@ -175,6 +178,10 @@ export default class TikTokIntegration extends ScoialMedia {
 
     console.log(publish_id);
     console.log(error);
+
+    if (publish_id) {
+      await this.updateSelectedAccountStatus(selected_acc_id);
+    }
     const { url, id: videoId } = await this.uploadedVideoSuccess(
       open_id!,
       publish_id,

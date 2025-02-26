@@ -96,7 +96,7 @@ export default class TwitterIntegration extends ScoialMedia {
     post_format,
     post_content,
     post_media_url,
-    id: selected_acc_id,
+    selected_acc_id,
   }: any): Promise<any> {
     const [accessTokenSplit, accessSecretSplit] = accessToken.split(':');
     const client = new TwitterApi({
