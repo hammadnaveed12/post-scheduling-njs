@@ -1,9 +1,6 @@
 import AtpAgent, { RichText } from '@atproto/api';
-import axios from 'axios';
-import sharp from 'sharp';
 
-import { getSupabaseServerAdminClient } from '@kit/supabase/server-admin-client';
-
+import { reduceImageBySize } from '../utils/Sharp';
 import ScoialMedia from './SocialIntegration';
 
 class BlueskyIntegration extends ScoialMedia {
@@ -77,8 +74,10 @@ class BlueskyIntegration extends ScoialMedia {
       let uploadedMedia = null;
 
       // If post is media, upload the image first
-      if (post_type === 'media' && post_media_url) {
-        uploadedMedia = await this.agent.uploadBlob(new Blob([post_media_url]));
+      if (post_type === 'media' && post_format == 'image' && post_media_url) {
+        uploadedMedia = await this.agent.uploadBlob(
+          await reduceImageBySize(post_media_url),
+        );
       }
       const rt = new RichText({ text: post_content });
       await rt.detectFacets(this.agent);

@@ -49,19 +49,14 @@ function SelectPlatform({
           ? prev.filter((item: any) => item !== platform) // Remove if already selected
           : [...prev, platform], // Add if not selected
     );
-
-
-
-    
-    
   };
 
   function filterPlatformsByType(platforms: any, type: 'text' | 'media') {
     const platformTypes: any = {
       facebook: ['text', 'media'],
       instagram: ['media'],
-      threads: ['text','media'],
-      bluesky: ['text'],
+      threads: ['text', 'media'],
+      bluesky: ['text', 'media'],
       twitter: ['text', 'media'], // X (Twitter) supports both
       youtube: ['media'],
       linkedin: ['text', 'media'],
@@ -106,9 +101,9 @@ function SelectPlatform({
           .eq('user_id', user.id)
           .eq('active', true);
 
-          if(!social_accounts.data || social_accounts.data.length <= 0 ){
-              return
-          }
+        if (!social_accounts.data || social_accounts.data.length <= 0) {
+          return;
+        }
 
         const platforms: any = groupAccountsByPlatform(social_accounts.data);
 
@@ -132,20 +127,22 @@ function SelectPlatform({
 
   return (
     <div className="mt-3 flex items-center justify-center gap-5">
-      {availablePlatforms && availablePlatforms.map((platform: any) => (
-        <label key={platform.platform} className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            value={platform.platform}
-            checked={selectedPlatforms.includes(platform.platform)}
-            onChange={() => handleCheckboxChange(platform.platform)}
-            className="h-4 w-4"
-          />
-          <span>{platform.platform}</span>
-        </label>
-      ))}
-
-     
+      {availablePlatforms &&
+        availablePlatforms.map((platform: any) => (
+          <label
+            key={platform.platform}
+            className="flex items-center space-x-2"
+          >
+            <input
+              type="checkbox"
+              value={platform.platform}
+              checked={selectedPlatforms.includes(platform.platform)}
+              onChange={() => handleCheckboxChange(platform.platform)}
+              className="h-4 w-4"
+            />
+            <span>{platform.platform}</span>
+          </label>
+        ))}
     </div>
   );
 }

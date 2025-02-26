@@ -44,6 +44,7 @@
     "@manypkg/cli": "^0.23.0",
     "@turbo/gen": "^2.3.3",
     "axios": "^1.7.9",
+    "base64-arraybuffer": "^1.0.2",
     "child_process": "^1.0.2",
     "cross-env": "^7.0.3",
     "google-auth-library": "^9.15.1",
@@ -54,8 +55,5 @@
     "turbo": "2.3.3",
     "twitter-api-v2": "^1.20.1",
     "typescript": "^5.7.3"
-  },
-  "dependencies": {
-    "base64-arraybuffer": "^1.0.2"
   }
 }
